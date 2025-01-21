@@ -1,0 +1,14 @@
+torch
+scipy
+numpy
+matplotlib
+pandas
+seaborn
+scikit_optimize
+tqdm
+pyparsing
+gaussian_process
+PyYAML
+openpyxl
+pysam
+genomepy

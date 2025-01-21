@@ -1,0 +1,26 @@
+config:
+    # IDs & paths
+    data_id: "real_data"
+    model_id: "cancer_type_oversampler_1"
+    models_dir: "../trained_models/fix_generator_oversample/"
+    cosmic_version: "v3"
+    type: "real"
+
+    # Training params
+    iterations: 500
+    num_classes: 60
+    lagrange_param: 0.001
+    batch_size: 100
+    lr_encoder: 0.005
+    lr_decoder: 0.0005
+
+    # WANDB params
+    enable_logging: True
+    wandb_project_id: "fix_generator_oversample"
+
+    # Network params
+    num_hidden_layers: 5
+    latent_dim: 100
+
+    # Misc
+    device: "cuda"

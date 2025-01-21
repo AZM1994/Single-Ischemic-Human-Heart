@@ -1,0 +1,30 @@
+2024-05-30 10:51:49,482 INFO    MainThread:1744 [wandb_setup.py:_flush():76] Current SDK version is 0.17.0
+2024-05-30 10:51:49,482 INFO    MainThread:1744 [wandb_setup.py:_flush():76] Configure stats pid to 1744
+2024-05-30 10:51:49,482 INFO    MainThread:1744 [wandb_setup.py:_flush():76] Loading settings from /Users/zhemingan/.config/wandb/settings
+2024-05-30 10:51:49,482 INFO    MainThread:1744 [wandb_setup.py:_flush():76] Loading settings from /Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/wandb/settings
+2024-05-30 10:51:49,482 INFO    MainThread:1744 [wandb_setup.py:_flush():76] Loading settings from environment variables: {}
+2024-05-30 10:51:49,482 INFO    MainThread:1744 [wandb_setup.py:_flush():76] Applying setup settings: {'_disable_service': False}
+2024-05-30 10:51:49,482 INFO    MainThread:1744 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program_relpath': 'train_classifier.py', 'program_abspath': '/Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/train_classifier.py', 'program': '/Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/train_classifier.py'}
+2024-05-30 10:51:49,482 INFO    MainThread:1744 [wandb_setup.py:_flush():76] Applying login settings: {}
+2024-05-30 10:51:49,482 INFO    MainThread:1744 [wandb_init.py:_log_setup():520] Logging user logs to /Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/wandb/run-20240530_105149-ltbswg5x/logs/debug.log
+2024-05-30 10:51:49,482 INFO    MainThread:1744 [wandb_init.py:_log_setup():521] Logging internal logs to /Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/wandb/run-20240530_105149-ltbswg5x/logs/debug-internal.log
+2024-05-30 10:51:49,482 INFO    MainThread:1744 [wandb_init.py:init():560] calling init triggers
+2024-05-30 10:51:49,482 INFO    MainThread:1744 [wandb_init.py:init():567] wandb.init called with sweep_config: {}
+config: {'data_id': 'datasets/detector', 'model_id': 'classifier_final', 'models_dir': '../trained_models/test_exp/', 'iterations': 20, 'num_classes': 72, 'sigmoid_params': [5000, 1000], 'batch_size': 100, 'lr': 0.00043, 'enable_logging': True, 'wandb_project_id': 'classifier', 'num_hidden_layers': 3, 'num_neurons': 260, 'device': 'cpu'}
+2024-05-30 10:51:49,482 INFO    MainThread:1744 [wandb_init.py:init():610] starting backend
+2024-05-30 10:51:49,482 INFO    MainThread:1744 [wandb_init.py:init():614] setting up manager
+2024-05-30 10:51:49,484 INFO    MainThread:1744 [backend.py:_multiprocessing_setup():105] multiprocessing start_methods=spawn,fork,forkserver, using: spawn
+2024-05-30 10:51:49,484 INFO    MainThread:1744 [wandb_init.py:init():622] backend started and connected
+2024-05-30 10:51:49,487 INFO    MainThread:1744 [wandb_init.py:init():711] updated telemetry
+2024-05-30 10:51:49,488 INFO    MainThread:1744 [wandb_init.py:init():744] communicating run to backend with 90.0 second timeout
+2024-05-30 10:51:49,692 ERROR   MainThread:1744 [wandb_init.py:init():770] encountered error: [Errno 32] Broken pipe
+2024-05-30 10:51:49,692 ERROR   MainThread:1744 [wandb_init.py:init():1174] error in wandb.init()
+Traceback (most recent call last):
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/wandb_init.py", line 1164, in init
+    return wi.init()
+           ^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/wandb_init.py", line 776, in init
+    raise error
+wandb.errors.CommError: [Errno 32] Broken pipe
+2024-05-30 11:14:31,249 WARNING MsgRouterThr:1744 [router.py:message_loop():77] message_loop has been closed
+2024-05-30 11:14:31,249 WARNING MsgRouterThr:1744 [router.py:message_loop():77] message_loop has been closed

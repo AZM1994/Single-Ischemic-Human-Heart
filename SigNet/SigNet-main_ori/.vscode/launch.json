@@ -1,0 +1,177 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+
+
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "cwd": "${workspaceFolder}/src",
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "Python: Example",
+            "type": "python",
+            "request": "launch",
+            "program": "example.py",
+            "cwd": "${workspaceFolder}",
+            // "args": ["v3"],
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "Python: Generate Classifier Data",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "cwd": "${workspaceFolder}/src/generate_data",
+            "args": ["v3"],
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "Python: Generate Errorfinder Data",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "cwd": "${workspaceFolder}/src/generate_errorfinder_data.py",
+            "args": ["v3"],
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "Python: Generate Data Using Generator",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "cwd": "${workspaceFolder}/src/generate_data_using_generator.py",
+            "args": ["v3"],
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "Python: Train generator",
+            "type": "python",
+            "request": "launch",
+            "program": "train_generator.py",
+            "cwd": "${workspaceFolder}/signaturesnet/",
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "Python: Train finetuner",
+            "type": "python",
+            "request": "launch",
+            "program": "train_finetuner.py",
+            "cwd": "${workspaceFolder}/src",
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "Python: Train errorfinder",
+            "type": "python",
+            "request": "launch",
+            "program": "train_errorfinder.py",
+            "cwd": "${workspaceFolder}/src",
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "Python: Train nummut",
+            "type": "python",
+            "request": "launch",
+            "program": "train_nummutnet.py",
+            "cwd": "${workspaceFolder}/signaturesnet/",
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "Python: Test Yapsa-Inspired-Baseline",
+            "type": "python",
+            "request": "launch",
+            "program": "src/models/yapsa_inspired_baseline.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "Python: Plot comparison",
+            "type": "python",
+            "request": "launch",
+            "program": "classification_metrics_test.py",
+            "cwd": "${workspaceFolder}/src",
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "Python: HyperParamOpt Finetuner",
+            "type": "python",
+            "request": "launch",
+            "program": "optimize_finetuner.py",
+            "cwd": "${workspaceFolder}/src/hyperparam_optimizers",
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "Python: HyperParamOpt Classifier",
+            "type": "python",
+            "request": "launch",
+            "program": "optimize_classifier.py",
+            "cwd": "${workspaceFolder}/src/hyperparam_optimizers",
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "Python: Model Tester",
+            "type": "python",
+            "request": "launch",
+            "program": "signet_tester.py",
+            "cwd": "${workspaceFolder}/src/tests/test_by_module/",
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "Python: Search Test",
+            "type": "python",
+            "request": "launch",
+            "program": "search_test.py",
+            "cwd": "${workspaceFolder}/src/hyperparam_optimizers",
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "Python: Signet",
+            "type": "python",
+            "request": "launch",
+            "program": "signaturesnet.py",
+            "cwd": "${workspaceFolder}/src/modules",
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "Test Signet",
+            "type": "python",
+            "request": "launch",
+            "program": "signet_tester.py",
+            "cwd": "${workspaceFolder}/src/tests/test_by_module/",
+            "console": "integratedTerminal"
+        }
+
+        {
+            "name": "CrossValidation",
+            "type": "python",
+            "request": "launch",
+            "program": "finetuner_crossvalidation.py",
+            "cwd": "${workspaceFolder}/src/trainers/",
+            "args": ["low"],
+            "console": "integratedTerminal"
+        }
+    ]
+}

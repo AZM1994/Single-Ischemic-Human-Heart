@@ -1,0 +1,12 @@
+Using config file: configs/finetuner/finetuner_large.yaml
+Using config: {'data_id': 'real_data', 'model_id': 'finetuner_large_1_fp_1', 'models_dir': '/Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/trained_models/Zheming/', 'load_data': True, 'source': 'large', 'network_type': 'large', 'iterations': 5, 'num_classes': 72, 'sigmoid_params': [[1000, 1000], [10000, 2000], [100000, 5000]], 'batch_size': 230, 'lr': 0.002597, 'enable_logging': True, 'wandb_project_id': 'exp_finetuner_fp', 'num_hidden_layers': 2, 'num_neurons': 742, 'device': 'cuda'}
+Using device: cpu
+
+2780it [00:02, 1272.20it/s]
+230 0.002597 2 742
+100%|██████████| 13/13 [00:00<00:00, 16.90it/s]
+100%|██████████| 13/13 [00:00<00:00, 18.10it/s]
+100%|██████████| 13/13 [00:00<00:00, 20.19it/s]
+100%|██████████| 13/13 [00:00<00:00, 21.68it/s]
+
+100%|██████████| 13/13 [00:00<00:00, 20.30it/s]

@@ -1,0 +1,79 @@
+wandb_version: 1
+
+data_id:
+  desc: null
+  value: real_data
+model_id:
+  desc: null
+  value: cancer_type_oversampler_1
+models_dir:
+  desc: null
+  value: ../trained_models/fix_generator_oversample/
+cosmic_version:
+  desc: null
+  value: v3
+type:
+  desc: null
+  value: real
+iterations:
+  desc: null
+  value: 500
+num_classes:
+  desc: null
+  value: 60
+lagrange_param:
+  desc: null
+  value: 0.001
+batch_size:
+  desc: null
+  value: 100
+lr_encoder:
+  desc: null
+  value: 0.005
+lr_decoder:
+  desc: null
+  value: 0.0005
+enable_logging:
+  desc: null
+  value: true
+wandb_project_id:
+  desc: null
+  value: fix_generator_oversample
+num_hidden_layers:
+  desc: null
+  value: 5
+latent_dim:
+  desc: null
+  value: 100
+device:
+  desc: null
+  value: cuda
+_wandb:
+  desc: null
+  value:
+    python_version: 3.11.4
+    cli_version: 0.17.0
+    framework: huggingface
+    huggingface_version: 4.29.2
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1717102925
+    t:
+      1:
+      - 1
+      - 5
+      - 11
+      - 49
+      - 53
+      - 55
+      3:
+      - 13
+      - 16
+      - 23
+      4: 3.11.4
+      5: 0.17.0
+      6: 4.29.2
+      8:
+      - 5
+      - 13
+      13: darwin-arm64

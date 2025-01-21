@@ -1,0 +1,7 @@
+include signaturesnet/data/data.xlsx
+include signaturesnet/data/mutation_type_order.xlsx
+include signaturesnet/data/real_data *.csv *txt
+recursive-include signaturesnet/trained_models *.json *.zip
+recursive-include signaturesnet/trained_models *
+recursive-include signaturesnet/configs *.yaml
+recursive-include signaturesnet/configs *

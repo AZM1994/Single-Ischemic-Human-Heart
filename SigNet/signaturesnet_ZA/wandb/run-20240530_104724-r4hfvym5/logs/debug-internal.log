@@ -1,0 +1,95 @@
+2024-05-30 10:47:24,976 INFO    StreamThr :1510 [internal.py:wandb_internal():85] W&B internal server running at pid: 1510, started at: 2024-05-30 10:47:24.975013
+2024-05-30 10:47:24,977 DEBUG   HandlerThread:1510 [handler.py:handle_request():158] handle_request: status
+2024-05-30 10:47:24,978 INFO    WriterThread:1510 [datastore.py:open_for_write():87] open: /Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/wandb/run-20240530_104724-r4hfvym5/run-r4hfvym5.wandb
+2024-05-30 10:47:24,980 DEBUG   SenderThread:1510 [sender.py:send():378] send: header
+2024-05-30 10:47:24,980 DEBUG   SenderThread:1510 [sender.py:send():378] send: run
+2024-05-30 10:47:25,133 ERROR   SenderThread:1510 [internal_api.py:execute():344] 404 response executing GraphQL.
+2024-05-30 10:47:25,133 ERROR   SenderThread:1510 [internal_api.py:execute():345] {"errors":[{"message":"project not found","path":["upsertBucket"]}],"data":{"upsertBucket":null}}
+2024-05-30 10:47:25,133 ERROR   SenderThread:1510 [sender.py:send_run():970] [Errno 32] Broken pipe
+Traceback (most recent call last):
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/internal/internal_api.py", line 340, in execute
+    return self.client.execute(*args, **kwargs)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/vendor/gql-0.2.0/wandb_gql/client.py", line 52, in execute
+    result = self._get_result(document, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/vendor/gql-0.2.0/wandb_gql/client.py", line 60, in _get_result
+    return self.transport.execute(document, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/lib/gql_request.py", line 59, in execute
+    request.raise_for_status()
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/requests/models.py", line 1021, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 404 Client Error: Not Found for url: https://api.wandb.ai/graphql
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/apis/normalize.py", line 41, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/internal/internal_api.py", line 2188, in upsert_run
+    response = self.gql(
+               ^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/internal/internal_api.py", line 312, in gql
+    ret = self._retry_gql(
+          ^^^^^^^^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/lib/retry.py", line 131, in __call__
+    result = self._call_fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/internal/internal_api.py", line 347, in execute
+    wandb.termerror(f"Error while calling W&B API: {error} ({response})")
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/errors/term.py", line 64, in termerror
+    _log(
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/errors/term.py", line 103, in _log
+    click.echo(line, file=sys.stderr, nl=newline)
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/click/utils.py", line 298, in echo
+    file.write(out)  # type: ignore
+    ^^^^^^^^^^^^^^^
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/internal/sender.py", line 968, in send_run
+    server_run = self._init_run(run, config_value_dict)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/internal/sender.py", line 1013, in _init_run
+    server_run, inserted, server_messages = self._api.upsert_run(
+                                            ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/apis/normalize.py", line 87, in wrapper
+    raise CommError(message, err).with_traceback(sys.exc_info()[2])
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/apis/normalize.py", line 41, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/internal/internal_api.py", line 2188, in upsert_run
+    response = self.gql(
+               ^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/internal/internal_api.py", line 312, in gql
+    ret = self._retry_gql(
+          ^^^^^^^^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/lib/retry.py", line 131, in __call__
+    result = self._call_fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/internal/internal_api.py", line 347, in execute
+    wandb.termerror(f"Error while calling W&B API: {error} ({response})")
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/errors/term.py", line 64, in termerror
+    _log(
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/errors/term.py", line 103, in _log
+    click.echo(line, file=sys.stderr, nl=newline)
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/click/utils.py", line 298, in echo
+    file.write(out)  # type: ignore
+    ^^^^^^^^^^^^^^^
+wandb.errors.CommError: [Errno 32] Broken pipe
+2024-05-30 10:47:30,163 DEBUG   HandlerThread:1510 [handler.py:handle_request():158] handle_request: status_report
+2024-05-30 10:47:35,182 DEBUG   HandlerThread:1510 [handler.py:handle_request():158] handle_request: status_report
+2024-05-30 10:47:40,197 DEBUG   HandlerThread:1510 [handler.py:handle_request():158] handle_request: status_report
+2024-05-30 10:47:45,205 DEBUG   HandlerThread:1510 [handler.py:handle_request():158] handle_request: status_report
+2024-05-30 10:47:50,223 DEBUG   HandlerThread:1510 [handler.py:handle_request():158] handle_request: status_report
+2024-05-30 10:47:55,234 DEBUG   HandlerThread:1510 [handler.py:handle_request():158] handle_request: status_report
+2024-05-30 10:48:00,253 DEBUG   HandlerThread:1510 [handler.py:handle_request():158] handle_request: status_report
+2024-05-30 10:48:05,274 DEBUG   HandlerThread:1510 [handler.py:handle_request():158] handle_request: status_report
+2024-05-30 10:48:05,536 DEBUG   HandlerThread:1510 [handler.py:handle_request():158] handle_request: shutdown
+2024-05-30 10:48:05,537 INFO    HandlerThread:1510 [handler.py:finish():882] shutting down handler
+2024-05-30 10:48:06,279 INFO    SenderThread:1510 [sender.py:finish():1545] shutting down sender
+2024-05-30 10:48:06,280 INFO    WriterThread:1510 [datastore.py:close():296] close: /Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/wandb/run-20240530_104724-r4hfvym5/run-r4hfvym5.wandb

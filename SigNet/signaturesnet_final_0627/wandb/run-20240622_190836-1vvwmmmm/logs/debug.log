@@ -1,0 +1,47 @@
+2024-06-22 19:08:36,977 INFO    MainThread:93175 [wandb_setup.py:_flush():76] Current SDK version is 0.17.0
+2024-06-22 19:08:36,978 INFO    MainThread:93175 [wandb_setup.py:_flush():76] Configure stats pid to 93175
+2024-06-22 19:08:36,978 INFO    MainThread:93175 [wandb_setup.py:_flush():76] Loading settings from /Users/zhemingan/.config/wandb/settings
+2024-06-22 19:08:36,978 INFO    MainThread:93175 [wandb_setup.py:_flush():76] Loading settings from /Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/wandb/settings
+2024-06-22 19:08:36,978 INFO    MainThread:93175 [wandb_setup.py:_flush():76] Loading settings from environment variables: {}
+2024-06-22 19:08:36,978 INFO    MainThread:93175 [wandb_setup.py:_flush():76] Applying setup settings: {'_disable_service': False}
+2024-06-22 19:08:36,978 INFO    MainThread:93175 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program_relpath': 'train_finetuner.py', 'program_abspath': '/Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/train_finetuner.py', 'program': '/Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/train_finetuner.py'}
+2024-06-22 19:08:36,978 INFO    MainThread:93175 [wandb_setup.py:_flush():76] Applying login settings: {}
+2024-06-22 19:08:36,978 INFO    MainThread:93175 [wandb_init.py:_log_setup():520] Logging user logs to /Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/wandb/run-20240622_190836-1vvwmmmm/logs/debug.log
+2024-06-22 19:08:36,978 INFO    MainThread:93175 [wandb_init.py:_log_setup():521] Logging internal logs to /Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/wandb/run-20240622_190836-1vvwmmmm/logs/debug-internal.log
+2024-06-22 19:08:36,978 INFO    MainThread:93175 [wandb_init.py:init():560] calling init triggers
+2024-06-22 19:08:36,978 INFO    MainThread:93175 [wandb_init.py:init():567] wandb.init called with sweep_config: {}
+config: {'data_id': 'real_data', 'model_id': 'finetuner_large_1_fp_1', 'models_dir': '/Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/trained_models/Zheming/', 'load_data': True, 'source': 'large', 'network_type': 'large', 'iterations': 5, 'num_classes': 72, 'sigmoid_params': [[1000, 1000], [10000, 2000], [100000, 5000]], 'batch_size': 230, 'lr': 0.002597, 'enable_logging': True, 'wandb_project_id': 'exp_finetuner_fp', 'num_hidden_layers': 2, 'num_neurons': 742, 'device': 'cuda'}
+2024-06-22 19:08:36,978 INFO    MainThread:93175 [wandb_init.py:init():605] wandb.init() called when a run is still active
+2024-06-22 19:08:47,423 INFO    MainThread:93175 [wandb_run.py:_finish():2103] finishing run za1994/my-project-name/eeqtdntv
+2024-06-22 19:08:47,423 INFO    MainThread:93175 [wandb_run.py:_atexit_cleanup():2343] got exitcode: 0
+2024-06-22 19:08:47,423 INFO    MainThread:93175 [wandb_run.py:_restore():2326] restore
+2024-06-22 19:08:47,423 INFO    MainThread:93175 [wandb_run.py:_restore():2332] restore done
+2024-06-22 19:10:25,779 INFO    MainThread:93175 [wandb_settings.py:_apply_login():1895] Applying login settings: {}
+2024-06-22 19:10:25,783 INFO    MainThread:93175 [wandb_setup.py:_flush():76] Current SDK version is 0.17.0
+2024-06-22 19:10:25,783 INFO    MainThread:93175 [wandb_setup.py:_flush():76] Configure stats pid to 93175
+2024-06-22 19:10:25,783 INFO    MainThread:93175 [wandb_setup.py:_flush():76] Loading settings from /Users/zhemingan/.config/wandb/settings
+2024-06-22 19:10:25,783 INFO    MainThread:93175 [wandb_setup.py:_flush():76] Loading settings from /Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/wandb/settings
+2024-06-22 19:10:25,783 INFO    MainThread:93175 [wandb_setup.py:_flush():76] Loading settings from environment variables: {}
+2024-06-22 19:10:25,783 INFO    MainThread:93175 [wandb_setup.py:_flush():76] Applying setup settings: {'_disable_service': False}
+2024-06-22 19:10:25,783 INFO    MainThread:93175 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program_relpath': 'train_finetuner.py', 'program_abspath': '/Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/train_finetuner.py', 'program': '/Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/train_finetuner.py'}
+2024-06-22 19:10:25,783 INFO    MainThread:93175 [wandb_setup.py:_flush():76] Applying login settings: {}
+2024-06-22 19:10:25,783 INFO    MainThread:93175 [wandb_init.py:_log_setup():520] Logging user logs to /Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/wandb/run-20240622_191025-uwodml6e/logs/debug.log
+2024-06-22 19:10:25,783 INFO    MainThread:93175 [wandb_init.py:_log_setup():521] Logging internal logs to /Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/wandb/run-20240622_191025-uwodml6e/logs/debug-internal.log
+2024-06-22 19:10:25,783 INFO    MainThread:93175 [wandb_init.py:init():560] calling init triggers
+2024-06-22 19:10:25,783 INFO    MainThread:93175 [wandb_init.py:init():567] wandb.init called with sweep_config: {}
+config: {'data_id': 'real_data', 'model_id': 'finetuner_large_1_fp_1', 'models_dir': '/Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/trained_models/Zheming/', 'load_data': True, 'source': 'large', 'network_type': 'large', 'iterations': 5, 'num_classes': 72, 'sigmoid_params': [[1000, 1000], [10000, 2000], [100000, 5000]], 'batch_size': 230, 'lr': 0.002597, 'enable_logging': True, 'wandb_project_id': 'exp_finetuner_fp', 'num_hidden_layers': 2, 'num_neurons': 742, 'device': 'cuda'}
+2024-06-22 19:10:25,783 INFO    MainThread:93175 [wandb_init.py:init():610] starting backend
+2024-06-22 19:10:25,783 INFO    MainThread:93175 [wandb_init.py:init():614] setting up manager
+2024-06-22 19:10:25,785 INFO    MainThread:93175 [backend.py:_multiprocessing_setup():105] multiprocessing start_methods=spawn,fork,forkserver, using: spawn
+2024-06-22 19:10:25,785 INFO    MainThread:93175 [wandb_init.py:init():622] backend started and connected
+2024-06-22 19:10:25,788 INFO    MainThread:93175 [wandb_init.py:init():711] updated telemetry
+2024-06-22 19:10:25,788 INFO    MainThread:93175 [wandb_init.py:init():744] communicating run to backend with 90.0 second timeout
+2024-06-22 19:10:25,939 ERROR   MainThread:93175 [wandb_init.py:init():770] encountered error: [Errno 32] Broken pipe
+2024-06-22 19:10:25,939 ERROR   MainThread:93175 [wandb_init.py:init():1174] error in wandb.init()
+Traceback (most recent call last):
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/wandb_init.py", line 1164, in init
+    return wi.init()
+           ^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/wandb_init.py", line 776, in init
+    raise error
+wandb.errors.CommError: [Errno 32] Broken pipe

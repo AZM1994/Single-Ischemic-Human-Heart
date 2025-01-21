@@ -1,0 +1,45 @@
+2024-06-22 19:15:53,345 INFO    MainThread:4066 [wandb_setup.py:_flush():76] Current SDK version is 0.17.0
+2024-06-22 19:15:53,345 INFO    MainThread:4066 [wandb_setup.py:_flush():76] Configure stats pid to 4066
+2024-06-22 19:15:53,345 INFO    MainThread:4066 [wandb_setup.py:_flush():76] Loading settings from /Users/zhemingan/.config/wandb/settings
+2024-06-22 19:15:53,345 INFO    MainThread:4066 [wandb_setup.py:_flush():76] Loading settings from /Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/wandb/settings
+2024-06-22 19:15:53,345 INFO    MainThread:4066 [wandb_setup.py:_flush():76] Loading settings from environment variables: {}
+2024-06-22 19:15:53,345 INFO    MainThread:4066 [wandb_setup.py:_flush():76] Applying setup settings: {'_disable_service': False}
+2024-06-22 19:15:53,345 INFO    MainThread:4066 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program_relpath': 'train_finetuner.py', 'program_abspath': '/Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/train_finetuner.py', 'program': '/Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/train_finetuner.py'}
+2024-06-22 19:15:53,346 INFO    MainThread:4066 [wandb_setup.py:_flush():76] Applying login settings: {}
+2024-06-22 19:15:53,346 INFO    MainThread:4066 [wandb_init.py:_log_setup():520] Logging user logs to /Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/wandb/run-20240622_191553-6lfnq7od/logs/debug.log
+2024-06-22 19:15:53,346 INFO    MainThread:4066 [wandb_init.py:_log_setup():521] Logging internal logs to /Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/wandb/run-20240622_191553-6lfnq7od/logs/debug-internal.log
+2024-06-22 19:15:53,346 INFO    MainThread:4066 [wandb_init.py:init():560] calling init triggers
+2024-06-22 19:15:53,346 INFO    MainThread:4066 [wandb_init.py:init():567] wandb.init called with sweep_config: {}
+config: {'data_id': 'real_data', 'model_id': 'finetuner_large_1_fp_1', 'models_dir': '/Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/trained_models/Zheming/', 'load_data': True, 'source': 'large', 'network_type': 'large', 'iterations': 5, 'num_classes': 72, 'sigmoid_params': [[1000, 1000], [10000, 2000], [100000, 5000]], 'batch_size': 230, 'lr': 0.002597, 'enable_logging': True, 'wandb_project_id': 'exp_finetuner_fp', 'num_hidden_layers': 2, 'num_neurons': 742, 'device': 'cuda'}
+2024-06-22 19:15:53,346 INFO    MainThread:4066 [wandb_init.py:init():610] starting backend
+2024-06-22 19:15:53,346 INFO    MainThread:4066 [wandb_init.py:init():614] setting up manager
+2024-06-22 19:15:53,348 INFO    MainThread:4066 [backend.py:_multiprocessing_setup():105] multiprocessing start_methods=spawn,fork,forkserver, using: spawn
+2024-06-22 19:15:53,348 INFO    MainThread:4066 [wandb_init.py:init():622] backend started and connected
+2024-06-22 19:15:53,351 INFO    MainThread:4066 [wandb_init.py:init():711] updated telemetry
+2024-06-22 19:15:53,351 INFO    MainThread:4066 [wandb_init.py:init():744] communicating run to backend with 90.0 second timeout
+2024-06-22 19:17:00,931 WARNING MainThread:4066 [wandb_init.py:init():1168] interrupted
+Traceback (most recent call last):
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/wandb_init.py", line 1164, in init
+    return wi.init()
+           ^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/wandb_init.py", line 747, in init
+    result = run_init_handle.wait(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/lib/mailbox.py", line 283, in wait
+    found, abandoned = self._slot._get_and_clear(timeout=wait_timeout)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/lib/mailbox.py", line 130, in _get_and_clear
+    if self._wait(timeout=timeout):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/wandb/sdk/lib/mailbox.py", line 126, in _wait
+    return self._event.wait(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/threading.py", line 622, in wait
+    signaled = self._cond.wait(timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhemingan/anaconda3/lib/python3.11/threading.py", line 324, in wait
+    gotit = waiter.acquire(True, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+2024-06-22 19:18:40,933 WARNING MsgRouterThr:4066 [router.py:message_loop():77] message_loop has been closed
+2024-06-22 19:18:40,933 WARNING MsgRouterThr:4066 [router.py:message_loop():77] message_loop has been closed

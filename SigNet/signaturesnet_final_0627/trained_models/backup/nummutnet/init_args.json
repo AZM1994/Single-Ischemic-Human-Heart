@@ -1,0 +1,1 @@
+{"hidden_dim": 300, "n_layers": 3, "input_dim": 72, "output_dim": 9, "model_type": "NumMutNet"}

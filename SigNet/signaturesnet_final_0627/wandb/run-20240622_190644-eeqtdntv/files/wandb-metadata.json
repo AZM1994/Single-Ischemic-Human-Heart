@@ -1,0 +1,31 @@
+{
+    "os": "macOS-14.4.1-arm64-arm-64bit",
+    "python": "3.11.4",
+    "heartbeatAt": "2024-06-22T23:06:45.349790",
+    "startedAt": "2024-06-22T23:06:44.028214",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/Users/zhemingan/anaconda3/lib/python3.11/site-packages/signaturesnet/train_finetuner.py",
+    "codePathLocal": "train_finetuner.py",
+    "codePath": "train_finetuner.py",
+    "host": "Zhemings-MBP-2",
+    "username": "zhemingan",
+    "executable": "/Users/zhemingan/anaconda3/bin/python",
+    "cpu_count": 12,
+    "cpu_count_logical": 12,
+    "disk": {
+        "/": {
+            "total": 1858.1917190551758,
+            "used": 732.8216896057129
+        }
+    },
+    "gpuapple": {
+        "type": "Apple M2 Pro",
+        "vendor": "sppci_vendor_Apple"
+    },
+    "memory": {
+        "total": 16.0
+    }
+}

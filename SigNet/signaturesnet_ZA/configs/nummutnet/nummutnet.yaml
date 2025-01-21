@@ -1,0 +1,20 @@
+config:
+    # IDs & paths
+    data_id: "datasets/detector"
+    model_name: "nummutnet"
+
+    # Training params
+    iterations: 2000
+    batch_size: 200
+    lr: 0.0001
+
+    # WANDB params
+    enable_logging: True
+    wandb_project_id: "nummutnet"
+
+    # Network params
+    num_hidden_layers: 1
+    num_neurons: 5000
+
+    # Misc
+    device: "cpu"
