@@ -1,0 +1,46 @@
+# permutation annotation
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/1039"
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/1113_D1"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/1113_E1"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/1113_F1"
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/1363_A4"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/1363_D4"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/1363_H4"
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/1673_A2"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/1673_A3"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/1673_D2"
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/1743_A3"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/1743_C3"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/1743_F3"
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/1864_E3"
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/4402_A1"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/4402_A3"
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/4638_A1"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/4638_A4"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/4638_B2"
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/5657_D1"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/5657_H1"
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/5828_C2"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/5828_G2"
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/5919_C4"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/5919_D2"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/5919_E3"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/5919_F6"
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/6032_A1"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/6032_C7"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/6032_E7"
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/604_B2"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/604_B3"
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/all_commands/permutation_annotation/convert_permutation_grange_to_vcf_snv_only.R "/n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/permutation_by_cell/604_B6"

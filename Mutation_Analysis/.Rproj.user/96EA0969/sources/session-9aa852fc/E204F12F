@@ -1,0 +1,26 @@
+{
+    "id": "E204F12F",
+    "path": "~/Documents/BCH_research/Hypoxia_Project_Integration/Mutation_Analysis/Hypoxia_PTA_Cases/scripts/4-mutation_signature_Denovo_rank4.R",
+    "project_path": "Hypoxia_PTA_Cases/scripts/4-mutation_signature_Denovo_rank4.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1737427581527.0,
+    "source_on_save": false,
+    "relative_order": 7,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "188,0",
+        "scrollLine": "149"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1734064388,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1734064388,
+    "read_only": false,
+    "read_only_alternatives": []
+}

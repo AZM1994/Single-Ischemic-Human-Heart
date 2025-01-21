@@ -1,0 +1,330 @@
+###############################################################################
+##### 1. determine the highest contribution signatures            #############
+##### 2. find signatures that are significantly different between #############
+#####    the normal and disease conditions                        #############
+###############################################################################
+
+##### determine the highest contribution signatures
+sig_contri <- as.data.frame(t(SigNet_contri))
+sig_contri_age_match <- sig_contri[Cell_ID_list_age_match, ]
+contri_for_each_sig <- colSums(sig_contri)
+top_contri_for_each_sig <- sort(contri_for_each_sig, decreasing = TRUE)[1:14]
+# top_contri_for_each_sig <- top_contri_for_each_sig[top_contri_for_each_sig > mean(contri_for_each_sig)]
+top_sigs <- row.names(data.frame(top_contri_for_each_sig))
+
+##### plot the top signature spectrum
+# top_sigs_spectrum <- signatures[ , top_sigs]
+# top_sigs_spectrum <- COSMIC_v3.3.1_sigs[ , top_sigs]
+top_sigs_spectrum <- COSMIC_v3.4_sigs[ , top_sigs]
+rownames(top_sigs_spectrum) <- rownames(mut_mat_age_match_conditional)
+p_top_sigs_spectrum <- plot_96_profile_abs(top_sigs_spectrum) + 
+  theme(plot.title = element_text(hjust = 0.5), text = element_text(size=24), axis.title.x = element_text(size = 24, hjust = 0.5), axis.title.y = element_text(size = 24, hjust = 0.5))
+ggsave(paste0(other_figure_dir, "/p_top_sigs_spectrum.pdf"), plot = p_top_sigs_spectrum, width = 20, height = 15, dpi = 300)
+
+##### plot the top signature spectrum by condition
+top_sigs_spectrum_by_condition <- as.data.frame(top_sigs_spectrum) %>% 
+  mutate(Control = top_sigs_spectrum %*% colMeans(sig_contri_age_match[control_range_age_match, top_sigs])) %>% 
+  mutate(IHD = top_sigs_spectrum %*% colMeans(sig_contri_age_match[disease_range_age_match, top_sigs])) %>%
+  mutate(Net_change = IHD - Control) |> base::`[`(c(control_name, disease_name, "Net_change"))
+
+p_top_sigs_spectrum_by_condition <- plot_96_profile_abs(top_sigs_spectrum_by_condition[ , c(control_name, disease_name, "Net_change")]) + 
+  theme(plot.title = element_text(hjust = 0.5), text = element_text(size=24), axis.title.x = element_text(size = 24, hjust = 0.5), axis.title.y = element_text(size = 24, hjust = 0.5))
+ggsave(paste0(other_figure_dir, "/p_top_sigs_spectrum_by_condition.pdf"), plot = p_top_sigs_spectrum_by_condition, width = 20, height = 10, dpi = 300)
+
+##### plot the top signature spectrum with ground truth
+ground_truth <- t(mut_mat_raw_cond[c(control_name, disease_name), ])
+ground_truth <- 1 / colSums(ground_truth) * ground_truth
+# ground_truth <- mut_mat_age_match_conditional[ , c(control_name, disease_name, "Net_change")]
+diff_spectrum <- top_sigs_spectrum_by_condition - ground_truth
+p_diff_spectrum <- plot_96_profile_abs(diff_spectrum) + 
+  theme(plot.title = element_text(hjust = 0.5), text = element_text(size=24), axis.title.x = element_text(size = 24, hjust = 0.5), axis.title.y = element_text(size = 24, hjust = 0.5))
+ggsave(paste0(other_figure_dir, "/p_diff_spectrum.pdf"), plot = p_diff_spectrum, width = 20, height = 10, dpi = 300)
+
+##### plot the top signature absolute contribution ###
+Reshape <- function(a, n, m){
+  if (missing(m)) 
+    m <- length(a)%/%n
+  if (length(a) != n * m) 
+    stop("Matrix 'a' does not have n*m elements")
+  dim(a) <- c(n, m)
+  return(a)
+}
+
+top_sig_contri_age_match_conditional <- sig_contri_age_match[(colnames(sig_contri_age_match) %in% top_sigs)] %>%
+  mutate(others = rowSums(sig_contri_age_match[!(colnames(sig_contri_age_match) %in% top_sigs)])) %>% t() %>% as.data.frame()
+
+top_sig_contri_age_match_conditional <- top_sig_contri_age_match_conditional %>%
+  mutate(Control = rowMeans(top_sig_contri_age_match_conditional[ , control_range_age_match])) %>% 
+  mutate(IHD = rowMeans(top_sig_contri_age_match_conditional[ , disease_range_age_match])) |> base::`[`(c(control_name, disease_name))
+
+sorted_labels <- as.data.frame(row.names(top_sig_contri_age_match_conditional)) %>%
+  mutate(A = .[[1]]) %>%  t() %>% as.matrix() %>% Reshape(nrow(top_sig_contri_age_match_conditional) * 2,1)
+
+dim(sorted_labels) <- c(nrow(top_sig_contri_age_match_conditional) * 2,1)
+  
+label_size <- 6 * rbind(top_sig_contri_age_match_conditional[,1] / top_sig_contri_age_match_conditional[,1], top_sig_contri_age_match_conditional[,2] / top_sig_contri_age_match_conditional[,2])
+label_size <- Reshape(label_size,ncol(label_size)*2,1)
+label_size[is.na(label_size)] <- 0
+
+##### plot absolute contribution for control and IHD
+p_sSNV_top_sigs_contri <- plot_contribution(top_sig_contri_age_match_conditional, coord_flip = FALSE, mode = "absolute") +
+  theme(text = element_text(size=32), axis.text.x = element_text(angle = 0, vjust = 0.0, hjust = 0.5)) + 
+  aes(label = sorted_labels) + geom_text(size = label_size, position = position_stack(vjust = 0.5), col = "white", fontface = "bold")
+ggsave(paste0(other_figure_dir, "/4-sSNV_top_sigs_contri.pdf"), plot = p_sSNV_top_sigs_contri, width = 12, height = 18, dpi = 300)
+
+##### compute the percentage of each top sig
+refined_new_fit_res_conditional_matrix_df <- data.frame(top_sig_contri_age_match_conditional)
+refined_new_fit_res_conditional_matrix_df$Normal_percentage <- scales::percent(refined_new_fit_res_conditional_matrix_df$Control / sum(refined_new_fit_res_conditional_matrix_df$Control), accuracy = 1L)
+refined_new_fit_res_conditional_matrix_df$Disease_percentage <- scales::percent(refined_new_fit_res_conditional_matrix_df$IHD / sum(refined_new_fit_res_conditional_matrix_df$IHD), accuracy = 1L)
+refined_new_fit_res_conditional_matrix_df[,1:2] <- round(refined_new_fit_res_conditional_matrix_df[,1:2], digits = 0)
+
+##########################################################################
+##### normalize total contribution for each cell to estimated burden #####
+##########################################################################
+sig_contri_normalized <- 1 / rowSums(sig_contri) * sig_contri * SCAN2_df$snv.rate.per.gb
+# sig_contri_normalized <- 1 / rowSums(sig_contri) * sig_contri * SCAN2_df$snv.burden
+sig_contri_normalized_age_match <- sig_contri_normalized[Cell_ID_list_age_match, ]
+
+contri_for_each_sig <- colSums(sig_contri_normalized)
+top_contri_for_each_sig <- sort(contri_for_each_sig, decreasing = TRUE)[1:15]
+# top_contri_for_each_sig <- top_contri_for_each_sig[top_contri_for_each_sig > mean(contri_for_each_sig)]
+top_sigs <- row.names(data.frame(top_contri_for_each_sig))
+
+##########################################################################
+## select signatures that are above certain percentage in either condition
+sig_percentage_threshold <- 10
+control_sig_contri <- as.data.frame(colSums(sig_contri_normalized[control_range, ])) %>%
+  setNames(c("sig_contri")) %>% mutate(Control_Percentage = sig_contri / sum(sig_contri) * 100)
+disease_sig_contri <- as.data.frame(colSums(sig_contri_normalized[disease_range, ])) %>%
+  setNames(c("sig_contri")) %>% mutate(IHD_Percentage = sig_contri / sum(sig_contri) * 100)
+all_sig_contri <- cbind(control_sig_contri, disease_sig_contri)
+selected_sigs <- all_sig_contri[all_sig_contri$Control_Percentage >= sig_percentage_threshold | all_sig_contri$IHD_Percentage >= sig_percentage_threshold, ]
+# selected_control_sigs <- control_sig_contri[control_sig_contri$Percentage >= sig_percentage_threshold, ]
+# selected_disease_sigs <- disease_sig_contri[disease_sig_contri$Percentage >= sig_percentage_threshold, ]
+
+# significant_sigs <- c("SBS30", "SBS32", "SBS34", "SBS44", "SBS89")
+significant_sigs <- top_sigs
+
+sig_contri_normalized_age_match_significant_conditional <- sig_contri_normalized_age_match[(colnames(sig_contri_normalized_age_match) %in% top_sigs)] %>% 
+  mutate(others = rowSums(sig_contri_normalized_age_match[!(colnames(sig_contri_normalized_age_match) %in% top_sigs)])) %>% t() %>% as.data.frame()
+
+sig_contri_normalized_age_match_significant_conditional <- sig_contri_normalized_age_match_significant_conditional %>%
+  mutate(Control = rowMeans(sig_contri_normalized_age_match_significant_conditional[ , control_range_age_match])) %>% 
+  mutate(IHD = rowMeans(sig_contri_normalized_age_match_significant_conditional[ , disease_range_age_match])) |> base::`[`(c(control_name, disease_name)) %>% 
+  mutate(Control_Percentage = Control / sum(Control) * 100) %>% 
+  mutate(IHD_Percentage = IHD / sum(IHD) * 100) %>% 
+  mutate(Control_label = paste0(rownames(.), " (", round(Control_Percentage, 1), "%)")) %>% 
+  mutate(IHD_label = paste0(rownames(.), " (", round(IHD_Percentage, 1), "%)")) %>% 
+  mutate(Control_label = ifelse(Control_Percentage < 0.7, NA, Control_label)) %>% 
+  mutate(IHD_label = ifelse(IHD_Percentage < 0.7, NA, IHD_label))
+
+# sorted_labels <- sig_contri_normalized_age_match_significant_conditional |> base::`[`(c("Control_label", "IHD_label")) %>% 
+#   t() %>% 
+#   as.matrix() %>% 
+#   Reshape(nrow(sig_contri_normalized_age_match_significant_conditional) * 2,1)
+sorted_labels <- as.data.frame(row.names(sig_contri_normalized_age_match_significant_conditional)) %>%
+  mutate(A = .[[1]]) %>% t() %>% as.matrix() %>% Reshape(nrow(sig_contri_normalized_age_match_significant_conditional) * 2,1)
+
+label_size <- 6 * rbind(sig_contri_normalized_age_match_significant_conditional[,1] / sig_contri_normalized_age_match_significant_conditional[,1],
+                        sig_contri_normalized_age_match_significant_conditional[,2] / sig_contri_normalized_age_match_significant_conditional[,2])
+label_size <- Reshape(label_size,ncol(label_size)*2,1)
+label_size[is.na(label_size)] <- 0
+
+# p_sSNV_top_sigs_burden <- plot_contribution(sig_contri_normalized_age_match_significant_conditional[,1:2], coord_flip = TRUE, mode = "absolute") +
+#   theme(text = element_text(size=32), axis.text.x = element_text(angle = 0, vjust = 0.0, hjust = 0.5)) + aes(label = sorted_labels) +
+#   theme_linedraw() + ggtitle(NULL) + 
+#   # geom_text(size = label_size, position = position_stack(vjust = 0.5), col = "white", fontface = "bold") +
+#   theme(panel.background = element_rect(fill = "grey95"), panel.grid.major = element_blank(),
+#         panel.grid.minor = element_blank(), text = element_text(face = "bold", size = 24))
+# ggsave(paste0(figures_for_manuscript_dir, "/4-sSNV_top_sigs_burden.png"), plot = p_sSNV_top_sigs_burden, width = 15, height = 6, dpi = 300)
+p_sSNV_top_sigs_burden <- plot_contribution(sig_contri_normalized_age_match_significant_conditional[,1:2], coord_flip = F, mode = "absolute") +
+  # aes(label = sorted_labels) + geom_text(size = label_size, position = position_stack(vjust = 0.5), col = "white", fontface = "bold") + 
+  theme_linedraw() + 
+  theme(panel.background = element_rect(fill = "white"), panel.grid.major = element_line(color = "grey80", linetype = "dashed", size = 0.25), 
+        panel.grid.minor = element_blank(), panel.border = element_rect(size = 0.5), text = element_text(size = 12))
+ggsave(paste0(main_figure_dir, "/4-sSNV_top_sigs_burden.pdf"), plot = p_sSNV_top_sigs_burden, width = 4, height = 6, dpi = 600)
+
+##############################################################################
+### add metadata and remove the signatures with all zeros in one condition ###
+##############################################################################
+sig_contri_normalized <- sig_contri_normalized %>% 
+  mutate(age = metadata_df$Age) %>% mutate(condition = metadata_df$Condition) %>%
+  mutate(gender = metadata_df$Gender) %>% mutate(Case_ID = metadata_df$Case_ID) %>% mutate(condition = relevel(factor(condition), ref = "Control"))
+
+sig_contri_normalized_control <- sig_contri_normalized[sig_contri_normalized$condition == control_name, ]
+zero_col_control <- which(colSums(sig_contri_normalized_control[1 : (ncol(sig_contri_normalized_control) - 4)]) == 0)
+# sig_contri_normalized <- sig_contri_normalized[, -zero_col_control]
+sig_contri_normalized <- sig_contri_normalized
+
+sig_contri_normalized_disease <- sig_contri_normalized[sig_contri_normalized$condition == disease_name, ]
+zero_col_disease <- which(colSums(sig_contri_normalized_disease[1 : (ncol(sig_contri_normalized_disease) - 4)]) == 0)
+sig_contri_normalized <- sig_contri_normalized[, -zero_col_disease]
+
+# zero_col <- which(colSums(sig_contri_normalized[1 : (ncol(sig_contri_normalized) - 4)]) == 0)
+# sig_contri_normalized <- sig_contri_normalized[, -zero_col]
+refined_selected_sigs_list <- colnames(sig_contri_normalized)[1 : (ncol(sig_contri_normalized) - 4)]
+
+plot_list <- c(1 : (ncol(sig_contri_normalized) - 4))
+all_mix_effect_model_p_value <- metadata_df[1,1]
+
+# pdf(paste0(other_figure_dir, "/4-lmer_top_sigs_all.pdf"), width = 12, height = 8)
+pdf(paste0(other_figure_dir, "/4-lmer_top_sigs_reported.pdf"), width = 12, height = 8)
+for (i in c(1,4,5,9,21,22,29,34,36)){
+# for (i in plot_list){
+# for (i in c(29)){
+  print(i)
+  print(refined_selected_sigs_list[i])
+  signature_burden_df <- sig_contri_normalized[c(refined_selected_sigs_list[i],'age','condition','Case_ID')]
+  colnames(signature_burden_df)[1] <- 'snv.rate.per.gb'
+  sig_digits = 2
+  ##### Mix effects model & age matched mix effects model
+  ## burden_df: the input matrix with columns: burden, condition, Case_ID, age
+  burden_df <- signature_burden_df
+  burden_df <- burden_df %>%
+    mutate(condition = relevel(factor(condition), ref = "Control")) %>%
+    group_by(factor(condition, levels = c(disease_name, control_name))) %>% arrange(age, .by_group = TRUE)
+  burden_df_control <- burden_df[burden_df$condition == "Control",]
+  burden_df_disease <- burden_df[burden_df$condition == "IHD",]
+  
+  if (sum(burden_df_control$snv.rate.per.gb) > 6 & sum(burden_df_disease$snv.rate.per.gb) > 6){
+    ## mixed linear modeling
+    burden_age_model <- lmer(snv.rate.per.gb ~ age + condition + (1|Case_ID), burden_df, REML = FALSE)
+    burden_age_model_control <- lmer(snv.rate.per.gb ~ age + (1|Case_ID), burden_df_control, REML = FALSE)
+    burden_age_model_disease <- lmer(snv.rate.per.gb ~ age + (1|Case_ID), burden_df_disease, REML = FALSE)
+    
+    ## check model parameters
+    summary_lm_all <- summary(burden_age_model)
+    summary_lm_control <- summary(burden_age_model_control)
+    # confint(burden_age_model_control, oldNames=FALSE)
+    summary_lm_disease <- summary(burden_age_model_disease)
+    
+    ## compute confident interval
+    CI_age_model <- confint(burden_age_model, oldNames = FALSE)
+    CI_age_model_control <- confint(burden_age_model_control, oldNames = FALSE)
+    
+    ## check p value and R^2
+    anova_pvalue <- anova(burden_age_model)$"Pr(>F)"[2]
+    if (refined_selected_sigs_list[i] %in% c("SBS32", "SBS89")){
+    # if (anova_pvalue < 0.0099){
+      # anova_pvalue_print <- format(anova_pvalue, scientific = TRUE, digits = 2)
+      # anova_pvalue_print <- formatC(signif(anova_pvalue, digits = 2), digits = 1, format="e", flag="#")
+      anova_pvalue_print <- formatC(signif(anova_pvalue, digits = 2), digits = 2, format="fg", flag="#")
+    } else{
+      anova_pvalue_print <- formatC(signif(anova_pvalue, digits = 2), digits = 2, format="fg", flag="#")
+    }
+    
+    anova_pvalue_control <- anova(burden_age_model_control)$"Pr(>F)"[1]
+    anova_pvalue_print_control <- formatC(signif(anova_pvalue_control, digits = 2), digits = 2, format="e", flag="#")
+    # anova_pvalue_print_control <- formatC(signif(anova_pvalue_control, digits = 2), digits = 2, format="fg", flag="#")
+    # print(anova_pvalue_control)
+    # print(anova_pvalue_print_control)
+    # mantissa <- format(as.numeric(sub("e.*", "", anova_pvalue_print_control)), nsmall = 2)
+    # exponent <- as.numeric(sub(".*e([+-]?\\d+)", "\\1", anova_pvalue_print_control))
+
+    all_mix_effect_model_p_value <- cbind(all_mix_effect_model_p_value, anova_pvalue)
+    
+    ## manually calculate the fitting lines
+    Control_fitting_x = range(burden_df_control$age)
+    Control_fitting_y = Control_fitting_x * fixef(burden_age_model_control)[2] + fixef(burden_age_model_control)[1]
+    geom_line_data <- rbind(Control_fitting_x, Control_fitting_y)
+    geom_line_data <- as.data.frame(t(geom_line_data))
+    
+    # aging_rate <- formatC(signif(fixef(burden_age_model_control)[2], digits = sig_digits), digits = sig_digits, format="fg", flag="#")
+    aging_rate <- format(round(fixef(burden_age_model_control)[2], digits = sig_digits), nsmall = sig_digits)
+    legend_data <- burden_df[c(7,20), c("age", "snv.rate.per.gb", "condition")]
+    p_SNV_burden_lme <- ggplot(burden_df, aes(x = age, y = snv.rate.per.gb), color = donors) + 
+      geom_point(pch = 21, data = legend_data, aes(x = age, y = snv.rate.per.gb, color = condition, fill = condition), size = 5) + 
+      geom_point(pch = 21, fill = c(disease_color, control_color), size = 5) + 
+      geom_line(aes(x = Control_fitting_x, y = Control_fitting_y), colour = "dodgerblue3", data = geom_line_data) + 
+      annotate("text", size = 7, x = 0.0 * max(burden_df$age), y = 1.0 * max(burden_df$snv.rate.per.gb), label = paste("aging effect:", aging_rate, "sSNVs/(GB·year)"), hjust = 0, color = dis_ctrl_color[1]) + 
+      # annotate("text", size = 7, x = 0.002 * max(burden_df$age), y = 0.93 * max(burden_df$snv.rate.per.gb), label = bquote("p =" ~ .(mantissa) ~ "×" ~ 10^{.(exponent)}), hjust = 0, color = dis_ctrl_color[1]) + 
+      annotate("text", size = 7, x = 0.002 * max(burden_df$age), y = 0.93 * max(burden_df$snv.rate.per.gb), label = paste("p = ", anova_pvalue_print_control), hjust = 0, color = dis_ctrl_color[1]) + 
+      annotate("text", size = 7, x = 0.002 * max(burden_df$age), y = 0.87 * max(burden_df$snv.rate.per.gb), label = paste("IHD effect:", format(round(fixef(burden_age_model)[3], digits = sig_digits), nsmall = sig_digits), "sSNVs/GB"), hjust = 0, color = dis_ctrl_color[2]) + 
+      annotate("text", size = 7, x = 0.0 * max(burden_df$age), y = 0.8 * max(burden_df$snv.rate.per.gb), label = paste("p = ", anova_pvalue_print), hjust = 0, color = dis_ctrl_color[2]) + 
+      # annotate("text", size = 7, x = 0.002 * max(burden_df$age), y = 1.0 * max(burden_df$snv.rate.per.gb), label = bquote("s = " ~ .(aging_rate) ~ GB^{phantom()-1}*year^{phantom()-1}), hjust = 0) + 
+      # annotate("text", size = 6, x = 0.0 * max(burden_df$age), y = 0.85 * max(burden_df$snv.rate.per.gb),
+      #          label = paste0("IHD excess SNVs = ", format(round(fixef(burden_age_model)[3], digits = sig_digits), nsmall = sig_digits), "/GB, ",
+      #                        "95% CI = [", format(round(CI_age_model[5, 1], digits = sig_digits), nsmall = sig_digits), ", ",
+      #                                               format(round(CI_age_model[5, 2], digits = sig_digits), nsmall = sig_digits), "]"), hjust = 0) +
+      # annotate("text", size = 6, x = 0.0 * max(burden_df$age), y = 0.90 * max(burden_df$snv.rate.per.gb),
+      #          label = paste0("Age accum. rate = ", format(round(fixef(burden_age_model_control)[2], digits = sig_digits), nsmall = sig_digits), "/(GB.year), ",
+      #                         "95% CI = [", format(round(CI_age_model_control[4, 1], digits = sig_digits), nsmall = sig_digits), ", ",
+      #                         format(round(CI_age_model_control[4, 2], digits = sig_digits), nsmall = sig_digits), "]"), hjust = 0) +
+      scale_color_manual(values = c("IHD" = "black", "Control" = "black"), guide = "legend") + scale_fill_manual(values = c("Control" = dis_ctrl_color[1], "IHD" = dis_ctrl_color[2]), guide = "legend") + 
+      labs(x = "Age (years)", y = paste0(refined_selected_sigs_list[i], " Contribution \n (sSNV rate per GB)")) + theme_linedraw() + 
+      theme(panel.background = element_rect(fill = "white"), panel.grid.major = element_line(color = "grey80", linetype = "dashed", size = 0.25), panel.grid.minor = element_blank(), 
+            panel.border = element_rect(size = 0.5), text = element_text(size = 24), axis.title.x = element_text(hjust = 0.4, vjust = 0))
+    
+    # if (anova_pvalue <= 0.05){
+      print(p_SNV_burden_lme)
+      ggsave(paste0(main_figure_dir, "/4-", refined_selected_sigs_list[i], "_SNV_burden_lme.pdf"), plot = p_SNV_burden_lme, width = 9, height = 6, dpi = 600)
+    # }
+    
+  } else {
+    print("low_num")
+    ## mixed linear modeling
+    burden_age_model <- lmer(snv.rate.per.gb ~ age + condition + (1|Case_ID), burden_df, REML = FALSE)
+    burden_age_model_control <- lm(snv.rate.per.gb ~ age, burden_df_control)
+    
+    ## check model parameters
+    summary_lm_all <- summary(burden_age_model)
+    summary_lm_control <- summary(burden_age_model_control)
+    
+    ## compute confident interval
+    CI_age_model <- confint(burden_age_model, oldNames=FALSE)
+    CI_age_model_control <- confint(burden_age_model_control, oldNames=FALSE)
+    
+    ## check p value and R^2
+    anova_pvalue <- anova(burden_age_model)$"Pr(>F)"[2]
+    if (refined_selected_sigs_list[i] %in% c("SBS32", "SBS89")){
+      # anova_pvalue_print <- format(anova_pvalue, scientific = TRUE, digits = 2)
+      # anova_pvalue_print <- formatC(signif(anova_pvalue, digits = 2), digits = 1, format="e", flag="#")
+      anova_pvalue_print <- formatC(signif(anova_pvalue, digits = 2), digits = 2, format="fg", flag="#")
+    } else{
+      anova_pvalue_print <- formatC(signif(anova_pvalue, digits = 2), digits = 2, format="fg", flag="#")
+    }
+    
+    anova_pvalue_control <- anova(burden_age_model_control)$"Pr(>F)"[1]
+    anova_pvalue_print_control <- formatC(signif(anova_pvalue_control, digits = 2), digits = 2, format="fg", flag="#")
+    
+    all_mix_effect_model_p_value <- cbind(all_mix_effect_model_p_value, anova_pvalue)
+    
+    ## manually calculate the fitting lines
+    Control_fitting_x = range(burden_df_control$age)
+    Control_fitting_y = Control_fitting_x * coef(burden_age_model_control)[2] + coef(burden_age_model_control)[1]
+    geom_line_data <- rbind(Control_fitting_x, Control_fitting_y)
+    geom_line_data <- as.data.frame(t(geom_line_data))
+    
+    # aging_rate <- formatC(signif(coef(burden_age_model_control)[2], digits = 2), digits = 2, format = "fg", flag = "#")
+    aging_rate <- format(round(coef(burden_age_model_control)[2], digits = sig_digits), nsmall = sig_digits)
+    legend_data <- burden_df[c(7,20), c("age", "snv.rate.per.gb", "condition")]
+    p_SNV_burden_lme <- ggplot(burden_df, aes(x = age, y = snv.rate.per.gb), color = donors) + 
+      geom_point(pch = 21, data = legend_data, aes(x = age, y = snv.rate.per.gb, color = condition, fill = condition), size = 5) + 
+      geom_point(pch = 21, fill = c(disease_color, control_color), size = 5) + 
+      geom_line(aes(x = Control_fitting_x, y = Control_fitting_y), colour = "dodgerblue3", data = geom_line_data) + 
+      annotate("text", size = 7, x = 0.0 * max(burden_df$age), y = 1.0 * max(burden_df$snv.rate.per.gb), label = paste("aging effect:", aging_rate, "sSNVs/(GB·year)"), hjust = 0, color = dis_ctrl_color[1]) + 
+      # annotate("text", size = 7, x = 0.002 * max(burden_df$age), y = 0.93 * max(burden_df$snv.rate.per.gb), label = bquote("p =" ~ .(mantissa) ~ "×" ~ 10^{.(exponent)}), hjust = 0, color = dis_ctrl_color[1]) + 
+      annotate("text", size = 7, x = 0.002 * max(burden_df$age), y = 0.93 * max(burden_df$snv.rate.per.gb), label = paste("p = ", anova_pvalue_print_control), hjust = 0, color = dis_ctrl_color[1]) + 
+      annotate("text", size = 7, x = 0.002 * max(burden_df$age), y = 0.87 * max(burden_df$snv.rate.per.gb), label = paste("IHD effect:", format(round(fixef(burden_age_model)[3], digits = sig_digits), nsmall = sig_digits), "sSNVs/GB"), hjust = 0, color = dis_ctrl_color[2]) + 
+      annotate("text", size = 7, x = 0.0 * max(burden_df$age), y = 0.8 * max(burden_df$snv.rate.per.gb), label = paste("p = ", anova_pvalue_print), hjust = 0, color = dis_ctrl_color[2]) + 
+      # annotate("text", size = 8, x = 0.0 * max(burden_df$age), y = 0.93 * max(burden_df$snv.rate.per.gb), label = paste("p = ", anova_pvalue_print), hjust = 0) + 
+      # annotate("text", size = 6, x = 0.0 * max(burden_df$age), y = 0.85 * max(burden_df$snv.rate.per.gb),
+      #          label = paste0("IHD excess SNVs = ", format(round(fixef(burden_age_model)[3], digits = sig_digits), nsmall = sig_digits), "/GB, ",
+      #                         "95% CI = [", format(round(CI_age_model[5, 1], digits = sig_digits), nsmall = sig_digits), ", ",
+      #                         format(round(CI_age_model[5, 2], digits = sig_digits), nsmall = sig_digits), "]"), hjust = 0) +
+      # annotate("text", size = 6, x = 0.0 * max(burden_df$age), y = 0.90 * max(burden_df$snv.rate.per.gb),
+      #          label = paste0("Age accum. rate = ", format(round(coef(burden_age_model_control)[2], digits = sig_digits), nsmall = sig_digits), "/(GB.year), ",
+      #                         "95% CI = [", format(round(CI_age_model_control[2, 1], digits = sig_digits), nsmall = sig_digits), ", ",
+      #                         format(round(CI_age_model_control[2, 2], digits = sig_digits), nsmall = sig_digits), "]"), hjust = 0) +
+      # annotate("text", size = 8, x = 0.002 * max(burden_df$age), y = 1.0 * max(burden_df$snv.rate.per.gb), label = bquote("s = " ~ .(aging_rate) ~ GB^{phantom()-1}*year^{phantom()-1}), hjust = 0) + 
+      scale_color_manual(values = c("IHD" = "black", "Control" = "black"), guide = "legend") + scale_fill_manual(values = c("Control" = dis_ctrl_color[1], "IHD" = dis_ctrl_color[2]), guide = "legend") + 
+      labs(x = "Age (years)", y = paste0(refined_selected_sigs_list[i], " Contribution \n (sSNV rate per GB)")) + theme_linedraw() + 
+      theme(panel.background = element_rect(fill = "white"), panel.grid.major = element_line(color = "grey80", linetype = "dashed", size = 0.25), panel.grid.minor = element_blank(), 
+            panel.border = element_rect(size = 0.5), text = element_text(size = 24), axis.title.x = element_text(hjust = 0.4, vjust = 0))
+    # if (anova_pvalue <= 0.05){
+      print(p_SNV_burden_lme)
+      ggsave(paste0(main_figure_dir, "/4-", refined_selected_sigs_list[i], "_SNV_burden_lme.pdf"), plot = p_SNV_burden_lme, width = 9, height = 6, dpi = 600)
+    # }
+  }
+}
+dev.off()

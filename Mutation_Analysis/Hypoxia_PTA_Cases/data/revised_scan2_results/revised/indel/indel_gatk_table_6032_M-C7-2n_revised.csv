@@ -1,0 +1,4 @@
+"","ncalls","callable.sens","callable.bp","callable.burden","rate.per.gb","burden","somatic.sens","pre.genotyping.burden","unsupported.filters"
+"1",2,0.245941558441558,144288295,8.13201320132013,28.1797397402199,164.71061073741,0.0121425085551319,438,FALSE
+"2",0,0.374855824682814,481619267,0,0,0,NA,438,FALSE
+"4",0,0.391660461653016,410388176,0,0,0,NA,438,FALSE

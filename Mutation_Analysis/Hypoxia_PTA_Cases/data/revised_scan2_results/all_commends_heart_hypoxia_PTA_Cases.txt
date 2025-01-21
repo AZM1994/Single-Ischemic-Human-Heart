@@ -1,0 +1,49 @@
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/zheming_mutburden.R
+
+
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 604_B2 604_Hypoxia_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 604_B3 604_Hypoxia_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 604_B6 604_Hypoxia_PTA
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 1113_D1 1113_Hypoxia_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 1113_E1 1113_Hypoxia_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 1113_F1 1113_Hypoxia_PTA
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 1743_A3 1743_Hypoxia_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 1743_C3 1743_Hypoxia_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 1743_F3 1743_Hypoxia_PTA
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 1363_A4 1363_Hypoxia_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 1363_D4 1363_Hypoxia_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 1363_H4 1363_Hypoxia_PTA
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 1039 1039_Hypoxia_PTA
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 1864_M-E3-2n 1864_Normal_PTA
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 4638_1_A1-2n 4638_Normal_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 4638_1_A4-2n 4638_Normal_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 4638_1_B2-2n 4638_Normal_PTA
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 5657_M-D1-2n 5657_Normal_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 5657_M-H1-2n 5657_Normal_PTA
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 5919_1_C4-2n 5919_Normal_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 5919_1_D2-2n 5919_Normal_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 5919_1_E3-2n 5919_Normal_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 5919_1_F6-2n 5919_Normal_PTA
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 6032_1_A1-2n 6032_Normal_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 6032_M-C7-2n 6032_Normal_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 6032_M-E7-2n 6032_Normal_PTA
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 4402_1_A1-2n 4402_Normal_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 4402_1_A3-2n 4402_Normal_PTA
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 1673_CM_A2_2n 1673_Normal_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 1673_CM_A3_2n 1673_Normal_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 1673_CM_D2_2n 1673_Normal_PTA
+
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 5828_CM_C2_2n 5828_Normal_PTA
+Rscript /n/no_backup2/bch/lee/zheming/heart_hypoxia/IPSC_Cases_scan2_analysis/Scan2_R_Analysis/extract_gatk_table.R 5828_CM_G2_2n 5828_Normal_PTA
