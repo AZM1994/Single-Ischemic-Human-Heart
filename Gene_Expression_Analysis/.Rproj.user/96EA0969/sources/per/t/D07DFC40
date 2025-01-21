@@ -1,0 +1,26 @@
+{
+    "id": "D07DFC40",
+    "path": "~/Documents/BCH_research/Gene_Expression_Analysis/command/O2/transcription_enrichment_O2.R",
+    "project_path": "command/O2/transcription_enrichment_O2.R",
+    "type": "r_source",
+    "hash": "283586116",
+    "contents": "",
+    "dirty": false,
+    "created": 1733906651286.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "135,2",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1723839232,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1723839232,
+    "read_only": false,
+    "read_only_alternatives": []
+}

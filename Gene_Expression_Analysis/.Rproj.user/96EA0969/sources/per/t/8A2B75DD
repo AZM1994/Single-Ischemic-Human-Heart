@@ -1,0 +1,26 @@
+{
+    "id": "8A2B75DD",
+    "path": "~/Documents/BCH_research/Gene_Expression_Analysis/command/local_test/gene_expression_chr_all_genes_ATACseq.R",
+    "project_path": "command/local_test/gene_expression_chr_all_genes_ATACseq.R",
+    "type": "r_source",
+    "hash": "2353170316",
+    "contents": "",
+    "dirty": false,
+    "created": 1725019999411.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "96,120",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1725298108,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1725298108502,
+    "read_only": false,
+    "read_only_alternatives": []
+}
