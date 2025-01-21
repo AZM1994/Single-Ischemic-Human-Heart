@@ -1,0 +1,207 @@
+library(goseq)
+library(ggplot2)
+library(reshape2)
+library(stringr)
+library(biomaRt)
+library(DOSE)
+library(dplyr)
+library(tidyr)
+
+setwd("/Users/zhemingan/Documents/BCH_research/SNV_enrichment_analysis/SNV_GO_Enrichment/heart_PTA_Cases")
+figure_save_dir <- "GOseq_results/all_mutation_noFDR"
+dir.create(figure_save_dir, recursive = T)
+numDEInCat_threshold = 2
+numInCat_threshold = 1000
+gene_length_type = "Gene_length"
+# gene_length_type = "Exon_length"
+color_set <- c(colorRampPalette(c("skyblue","dodgerblue4"))(9)[7], colorRampPalette(c("pink","firebrick"))(4)[3])
+
+### read gene list with metadata
+Hypoxia_PTA_Cases_metadata <- readRDS("SCAN2_df.rds") %>% as.data.frame() |> base::`[`(c("cell_ID", "age", "gender", "Case_ID", "condition", "snv.burden", "snv.rate.per.gb")) %>% 
+  rename_with(~ c("Cell_ID", "Condition"), .cols = c(1, 5))
+Condition_list <- unique(Hypoxia_PTA_Cases_metadata$Condition)
+selected_colnames <- c("Chr", "Start", "End", "Ref", "Alt", "Func.refGene", "Gene.refGene", "ExonicFunc.refGene", "Cell_ID", "Case_ID", "Condition", "mut_type", "age")
+rename_colnames <- c("Chr", "Start", "End", "Ref", "Alt", "Type", "Gene_symbol", "ExonicFunc.refGene", "Cell_ID", "Case_ID", "Condition", "mut_type", "age")
+genic_region <- c("exonic", "exonic;splicing", "intronic", "splicing", "UTR3", "UTR5", "UTR5;UTR3")
+deleterious_mutation <- c("splicing", "exonic;splicing", "frameshift deletion", "frameshift insertion", "nonframeshift deletion", "nonsynonymous SNV", "stopgain")
+
+genomic_SCAN2_df <- c()
+for (condition_temp in Condition_list) {
+  for (mutation_type in c("ssnv", "sindel")) {
+  # for (mutation_type in c("ssnv")) {
+    cat("Get genomic context for", condition_temp, mutation_type, "...\n")
+    heart_PTA_Cases_vcf_temp <- read.table(paste0("heart_PTA_Cases_annovar/heart_PTA_Cases.all_age.", condition_temp, "_", mutation_type, ".vcf"), sep = "\t") %>% mutate(V8 = sub(";.*", "", V8))
+    genomic_context_temp <- read.csv(paste0("heart_PTA_Cases_annovar/heart_PTA_Cases.all_age.", condition_temp, "_", mutation_type, ".csv"), header = TRUE) %>%
+      mutate(Cell_ID = heart_PTA_Cases_vcf_temp$V8) %>% mutate(Case_ID = str_extract(Cell_ID, "[^_]+")) %>% 
+      mutate(Condition = condition_temp) %>% mutate(mut_type = mutation_type)
+    
+    genomic_context_temp <- genomic_context_temp %>%
+      mutate(Cell_ID = ifelse(Cell_ID == "1864_M-E3-2n", "1864_E3", ifelse(Cell_ID == "4402_1_A1-2n", "4402_A1", ifelse(Cell_ID == "4402_1_A3-2n", "4402_A3",
+      ifelse(Cell_ID == "4638_1_A1-2n", "4638_A1", ifelse(Cell_ID == "4638_1_A4-2n", "4638_A4", ifelse(Cell_ID == "4638_1_B2-2n", "4638_B2",
+      ifelse(Cell_ID == "5657_M-D1-2n", "5657_D1", ifelse(Cell_ID == "5657_M-H1-2n", "5657_H1", ifelse(Cell_ID == "5828_CM_C2_2n", "5828_C2",
+      ifelse(Cell_ID == "5828_CM_G2_2n", "5828_G2", ifelse(Cell_ID == "5919_1_C4-2n", "5919_C4", ifelse(Cell_ID == "5919_1_D2-2n", "5919_D2",
+      ifelse(Cell_ID == "5919_1_E3-2n", "5919_E3", ifelse(Cell_ID == "5919_1_F6-2n", "5919_F6", ifelse(Cell_ID == "6032_1_A1-2n", "6032_A1",
+      ifelse(Cell_ID == "6032_M-C7-2n", "6032_C7", ifelse(Cell_ID == "6032_M-E7-2n", "6032_E7", ifelse(Cell_ID == "1673_CM_A2_2n", "1673_A2",
+      ifelse(Cell_ID == "1673_CM_A3_2n", "1673_A3", ifelse(Cell_ID == "1673_CM_D2_2n", "1673_D2", Cell_ID)))))))))))))))))))))
+    
+    genomic_SCAN2_df_temp <- merge(genomic_context_temp, Hypoxia_PTA_Cases_metadata[c("Cell_ID", "Case_ID", "Condition", "age")]) |> 
+      base::`[`(selected_colnames) %>% rename_with(~rename_colnames) %>% 
+      # filter(Type %in% genic_region) %>%
+      # filter(age >= 40 & age < 80) %>% 
+      # filter(Type %in% deleterious_mutation[1:2] | ExonicFunc.refGene %in% deleterious_mutation[3:7]) %>% 
+      mutate(Gene_symbol = str_remove(Gene_symbol, "\\(.*\\)$")) %>% 
+      filter(!grepl(";", Gene_symbol))
+    
+    genomic_SCAN2_df <- rbind(genomic_SCAN2_df, genomic_SCAN2_df_temp)
+  }
+}
+
+genomic_context_normal <- genomic_SCAN2_df[genomic_SCAN2_df$Condition == "Normal", ] %>% filter(!duplicated(Gene_symbol))
+genomic_context_disease <- genomic_SCAN2_df[genomic_SCAN2_df$Condition == "Disease", ] %>% filter(!duplicated(Gene_symbol))
+
+##### read gene length
+gene_length <- read.delim("hg19_refGene.length.tsv", header = F)
+colnames(gene_length) <- c("Gene_symbol", "Transcript", "Gene_length", "Exon_length")
+gene_length_deduped <- gene_length[!duplicated(gene_length$Gene_symbol),]
+
+################################################################################
+################################################################################
+##### GOseq and filtering for Control
+mut_gene_normal <- gene_length_deduped$Gene_symbol %in% genomic_context_normal$Gene_symbol
+names(mut_gene_normal) <- gene_length_deduped$Gene_symbol
+pwf_normal <- nullp(mut_gene_normal, "hg19", bias.data = gene_length_deduped[, gene_length_type])
+mut_gene_normal_GO <- goseq(pwf_normal, "hg19", "geneSymbol") %>% mutate(hitsPerc = numDEInCat * 100 / numInCat) %>% mutate(Condition = "Control")
+# mut_gene_normal_GO_filtered <- mut_gene_normal_GO %>%
+#   filter(numDEInCat >= numDEInCat_threshold & numInCat <= numInCat_threshold) %>%
+#   filter(over_represented_pvalue < 0.05) %>%
+#   mutate(Condition = "Control")
+
+## find gene names in each GO term: Control
+go_term_list_normal <- mut_gene_normal_GO$category  # GO term IDs from goseq
+go_genes_list_normal <- AnnotationDbi::select(org.Hs.eg.db, keys = go_term_list_normal, keytype = "GOALL", columns = c("SYMBOL"))
+genes_in_GO_normal <- go_genes_list_normal[go_genes_list_normal$SYMBOL %in% genomic_context_normal$Gene_symbol, ]
+genes_in_GO_normal_collapsed <- genes_in_GO_normal %>% group_by(GOALL) %>% 
+  filter(!duplicated(SYMBOL)) %>% 
+  summarise(genes = paste(SYMBOL, collapse = ", "))
+mut_gene_normal_GO_with_genes <- merge(mut_gene_normal_GO, genes_in_GO_normal_collapsed, by.x = "category", by.y = "GOALL") 
+mut_gene_normal_GO_filtered_with_genes <- mut_gene_normal_GO_with_genes %>% 
+  filter(numDEInCat >= numDEInCat_threshold & numInCat <= numInCat_threshold) %>%
+  filter(over_represented_pvalue < 0.05)
+
+write.csv(mut_gene_normal_GO_with_genes, paste0(figure_save_dir, "/mut_gene_normal_GO_with_genes.csv"))
+write.csv(mut_gene_normal_GO_filtered_with_genes, paste0(figure_save_dir, "/mut_gene_normal_GO_filtered_with_genes.csv"))
+
+################################################################################
+################################################################################
+##### GOseq and filtering for IHD
+mut_gene_disease <- gene_length_deduped$Gene_symbol %in% genomic_context_disease$Gene_symbol
+names(mut_gene_disease) <- gene_length_deduped$Gene_symbol
+pwf_disease <- nullp(mut_gene_disease, bias.data = gene_length_deduped[, gene_length_type])
+mut_gene_disease_GO <- goseq(pwf_disease, "hg19", "geneSymbol") %>% mutate(hitsPerc = numDEInCat * 100 / numInCat) %>% mutate(Condition = "IHD")
+# mut_gene_disease_GO_filtered <- mut_gene_disease_GO %>%
+#   filter(numDEInCat >= numDEInCat_threshold & numInCat <= numInCat_threshold) %>%
+#   filter(over_represented_pvalue < 0.05) %>%
+#   mutate(Condition = "IHD")
+
+## find gene names in each GO term: IHD
+go_term_list_disease <- mut_gene_disease_GO$category  # GO term IDs from goseq
+go_genes_list_disease <- AnnotationDbi::select(org.Hs.eg.db, keys = go_term_list_disease, keytype = "GOALL", columns = c("SYMBOL"))
+genes_in_GO_disease <- go_genes_list_disease[go_genes_list_disease$SYMBOL %in% genomic_context_disease$Gene_symbol, ]
+genes_in_GO_disease_collapsed <- genes_in_GO_disease %>% group_by(GOALL) %>% 
+  filter(!duplicated(SYMBOL)) %>% 
+  summarise(genes = paste(SYMBOL, collapse = ", "))
+mut_gene_disease_GO_with_genes <- merge(mut_gene_disease_GO, genes_in_GO_disease_collapsed, by.x = "category", by.y = "GOALL")
+mut_gene_disease_GO_filtered_with_genes <- mut_gene_disease_GO_with_genes %>% 
+  filter(numDEInCat >= numDEInCat_threshold & numInCat <= numInCat_threshold) %>% 
+  filter(over_represented_pvalue < 0.05)
+
+write.csv(mut_gene_disease_GO_with_genes, paste0(figure_save_dir, "/mut_gene_disease_GO_with_genes.csv"))
+write.csv(mut_gene_disease_GO_filtered_with_genes, paste0(figure_save_dir, "/mut_gene_disease_GO_filtered_with_genes.csv"))
+
+################################################################################
+################################################################################
+### generate volcano plots for BP
+nature_colors <- c("#a6761d", "#228C68", "#1f77b4", "#ff7f0e", "#e377c2", "#F22020")
+## in Control
+Development_Morpogenesis_Ctrl <- c("heart morphogenesis", "cardiac chamber development", "epithelial cell morphogenesis", "muscle organ development", "skeletal muscle tissue development", 
+                                   "epidermal cell differentiation", "keratinocyte differentiation", "epithelial cell differentiation", "tissue morphogenesis")
+Cell_Matrix_adhesion_Ctrl <- c("cell-cell adhesion", "cell junction organization", "protein localization to cell junction")
+Vesicle_Tranportation_Ctrl <- c("endosomal transport", "positive regulation of excitatory postsynaptic potential", "excitatory postsynaptic potential", 
+                                "detection of stimulus", "regulation of synaptic plasticity")
+
+# GO_BP_Ctrl <- mut_gene_normal_GO_filtered_with_genes[mut_gene_normal_GO_filtered_with_genes$ontology == "BP", ] %>% 
+GO_BP_Ctrl <- mut_gene_normal_GO_with_genes[mut_gene_normal_GO_with_genes$ontology == "BP", ] %>% 
+  mutate(BP_group = ifelse(term %in% Development_Morpogenesis_Ctrl, "Development & Morpogenesis", 
+                           ifelse(term %in% Cell_Matrix_adhesion_Ctrl, "Cell Matrix Adhesion", 
+                                  ifelse(term %in% Vesicle_Tranportation_Ctrl, "Vesicle Tranportation", NA)))) %>% 
+  filter(!is.na(BP_group))
+
+## in IHD
+Cell_Matrix_adhesion_IHD <- c("positive regulation of cell-matrix adhesion", "cell-substrate junction assembly", "positive regulation of cell-substrate junction organization")
+Cell_cycle_IHD <- c("regulation of reproductive process", "regulation of meiotic cell cycle", "spindle assembly checkpoint signaling", 
+                    "positive regulation of focal adhesion assembly", "positive regulation of DNA-templated transcription, elongation", "regulation of meiotic nuclear division")
+Metabolism_IHD <- c("neutral lipid metabolic process", "sulfur compound metabolic process", "phosphatidic acid metabolic process", 
+                    "fatty acid derivative biosynthetic process", "sulfur compound biosynthetic process")
+Vesicle_Tranportation_IHD <- c("endoplasmic reticulum to Golgi vesicle-mediated transport", "post-Golgi vesicle-mediated transport", "vesicle budding from membrane", 
+                               "vacuolar transport", "vesicle organization", "Golgi to plasma membrane protein transport", "regulation of vascular permeability", 
+                               "Golgi vesicle transport", "vesicle cargo loading", "protein localization to vacuole", "COPII-coated vesicle budding")
+Signaling_IHD <- c("ephrin receptor signaling pathway", "transmembrane receptor protein tyrosine kinase signaling pathway", "chemokine-mediated signaling pathway")
+Morphogenesis_IHD <- c("metanephros morphogenesis", "epithelial tube branching involved in lung morphogenesis")
+
+# GO_BP_IHD <- mut_gene_disease_GO_filtered_with_genes[mut_gene_disease_GO_filtered_with_genes$ontology == "BP", ] %>% 
+GO_BP_IHD <- mut_gene_disease_GO_with_genes[mut_gene_disease_GO_with_genes$ontology == "BP", ] %>% 
+  mutate(BP_group = ifelse(term %in% Cell_Matrix_adhesion_IHD, "Cell Matrix Adhesion", ifelse(term %in% Cell_cycle_IHD, "Cell Cycle", 
+                                                                                              ifelse(term %in% Metabolism_IHD, "Metabolism", ifelse(term %in% Vesicle_Tranportation_IHD, "Vesicle Tranportation", 
+                                                                                                                                                    ifelse(term %in% Signaling_IHD, "Signaling", ifelse(term %in% Morphogenesis_IHD, "Development & Morpogenesis", NA))))))) %>% filter(!is.na(BP_group))
+
+GO_BP_all <- rbind(GO_BP_Ctrl, GO_BP_IHD)
+# GO_BP_all_filtered <- GO_BP_all %>% 
+#   filter(numDEInCat >= numDEInCat_threshold & numInCat <= numInCat_threshold) %>% filter(over_represented_pvalue < 0.05)
+write.csv(GO_BP_all, paste0(figure_save_dir, "/GO_BP_all.csv"))
+# GO_BP_all_display <- GO_BP_all[]
+pdf(paste0(figure_save_dir, "/del_GO_BP_volcano.pdf"), width = 16, height = 8)
+p_GO_BP_all <- ggplot(GO_BP_all, aes(x = hitsPerc, y = -log10(over_represented_pvalue), color = BP_group)) + 
+  geom_point(size = 3) + geom_hline(yintercept = -log10(0.05), lty = 4, lwd = 0.6, alpha = 0.8) + geom_vline(xintercept = 5, lty = 4, lwd = 0.6, alpha = 0.8) + 
+  # geom_text_repel(data = subset(GO_BP_all, hitsPerc > 6 | -log10(over_represented_pvalue) > 2), aes(label = term), nudge_y = 0.035, size = 5) + 
+  scale_color_manual(values = nature_colors) + labs(x = "Hits Percentage (%)", y = "-log10(p-value)", color = "BP Category", title = "") + 
+  facet_wrap(~ Condition, scales = "free") + scale_y_continuous(labels = scales::number_format(accuracy = 0.1)) + 
+  theme(panel.border = element_rect(fill = NA, color = "black", size = 1, linetype = "solid"), panel.background = element_blank(), 
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), text = element_text(size=20), 
+        legend.position = c(0.37, 0.85), legend.background = element_rect(fill = "grey90", color = NA))
+p_GO_BP_all
+dev.off()
+
+################################################################################
+################################################################################
+### generate barplots for MF
+Kinase_receptor_IHD <- c("protein tyrosine kinase activity", "transmembrane receptor protein tyrosine kinase activity", "ephrin receptor activity", "transmembrane-ephrin receptor activity")
+Calcium_channel_activity_IHD <- c("calcium ion transmembrane transporter activity", "calcium channel activity", "voltage-gated calcium channel activity")
+Enzymatic_activity_IHD <- c("protein-glutamine gamma-glutamyltransferase activity", "metalloexopeptidase activity", "CoA-ligase activity", 
+                            "transferase activity, transferring alkyl or aryl (other than methyl) groups", 
+                            "transferase activity, transferring phosphorus-containing groups", "intramolecular oxidoreductase activity")
+Protein_binding_IHD <- c("monocarboxylic acid binding", "lysine-acetylated histone binding", "acetylation-dependent protein binding", "molecular condensate scaffold activity")
+MF_Ctrl <- c("scavenger receptor activity", "cell-cell adhesion mediator activity")
+
+GO_final <- rbind(mut_gene_normal_GO_with_genes, mut_gene_disease_GO_with_genes)
+GO_final_melt <- melt(GO_final[, c(2,4,5,6,7,8,9)], id = c("term", "ontology", "Condition", "hitsPerc", "numDEInCat", "numInCat"), value.name = "over_represented_pvalue")
+# write.csv(GO_final_melt_MF, paste0(figure_save_dir, "/GO_final_melt_MF.csv"))
+GO_final_melt_MF <- GO_final_melt[GO_final_melt$ontology == c("MF"), ] %>% mutate(Condition = factor(Condition, level = c("Control", "IHD"))) %>% 
+  # filter(numDEInCat >= numDEInCat_threshold & numInCat <= numInCat_threshold) %>% 
+  # filter(over_represented_pvalue < 0.05) %>% 
+  complete(term, ontology, Condition, fill = list(over_represented_pvalue = 1)) %>%
+  mutate(MF_group = ifelse(term %in% Kinase_receptor_IHD, "Kinase Receptor", ifelse(term %in% Calcium_channel_activity_IHD, "Calcium Channel Activity",
+                                                                                    ifelse(term %in% Enzymatic_activity_IHD, "Enzymatic Activity", ifelse(term %in% Protein_binding_IHD, "Protein Binding", ifelse(term %in% MF_Ctrl, "MF Ctrl", "not selected")))))) %>%
+  filter(MF_group != c("not selected")) %>% 
+  mutate(enrich_group = ifelse(MF_group %in% c("Kinase Receptor", "Calcium Channel Activity", "Enzymatic Activity", "Protein Binding"), "IHD Enriched",
+                               ifelse(MF_group %in% c("MF Ctrl"), "Control Enriched", NA))) %>%
+  mutate(enrich_group = factor(enrich_group, levels = c("Control Enriched", "IHD Enriched")))
+
+pdf(paste0(figure_save_dir, "/del_GO_MF_barplot.pdf"), width = 15, height = 20)
+p21 <- ggplot(GO_final_melt_MF, aes(x = reorder(term, -log10(over_represented_pvalue)), y = -log10(over_represented_pvalue), fill = Condition)) +
+  geom_col(position = position_dodge2(reverse = TRUE), width = 0.8) +  geom_hline(yintercept=-log10(0.05),linetype="dashed") + 
+  # facet_grid(enrich_group + MF_group ~ ., space = "free", scales = "free") + 
+  facet_grid(enrich_group ~ ., space = "free", scales = "free") + 
+  scale_fill_manual(values = color_set) + 
+  coord_flip() + labs(title = "", x = "GO Term", y = "-log10(p-value)") + theme(text = element_text(size=20), legend.position="bottom")
+p21
+dev.off()

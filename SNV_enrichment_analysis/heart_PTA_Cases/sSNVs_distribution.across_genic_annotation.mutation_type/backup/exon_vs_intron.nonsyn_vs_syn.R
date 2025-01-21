@@ -1,0 +1,341 @@
+library(ggplot2)
+library(reshape2)
+library(stringr)
+library(dplyr)
+
+setwd("/Users/zhemingan/Documents/annovar/heart_PTA_Cases/sSNVs_distribution.across_genic_annotation.mutation_type")
+exon_vs_intron_result_dir <- "results/1-exon_vs_intron"
+dir.create(exon_vs_intron_result_dir, recursive = TRUE)
+nonsyn_vs_syn_result_dir <- "results/2-nonsyn_vs_syn"
+dir.create(nonsyn_vs_syn_result_dir, recursive = TRUE)
+group_labels <- c("normal young (< 16 yrs)", "normal age-matched (49 ~ 66 yrs)", "disease (40 ~ 56 yrs)")
+
+genomic_factor <- 5.845
+se <- function(x, na.rm=FALSE){
+  if (na.rm) x <- na.omit(x) 
+  sqrt(var(x)/length(x))
+  }
+
+SCAN2_df <- readRDS("SCAN2_df.rds") %>% 
+  rbind(list("germline_bulk", 2, 0, 0, 0, 0, 0, 0, 0, 0, "FALSE", 
+             0, 0, 0, 0, 0, 0, 0, 0, "FALSE", 999, "bulk", "bulk", "bulk"))
+colnames(SCAN2_df)[1] <- "Cell_ID"
+
+################################################################################
+##### raw snv.rate.per.gb
+age_line_lb <- 20
+age_line_ub <- 70
+normal_young_count1 <- mean(SCAN2_df$snv.rate.per.gb[which(SCAN2_df$condition == "Normal" & SCAN2_df$age < age_line_lb)])
+normal_elder_count1 <- mean(SCAN2_df$snv.rate.per.gb[which(SCAN2_df$condition == "Normal" & SCAN2_df$age > age_line_lb & SCAN2_df$age < age_line_ub)])
+disease_count1 <- mean(SCAN2_df$snv.rate.per.gb[which(SCAN2_df$condition == "Disease")])
+
+normal_young_se1 <- se(SCAN2_df$snv.rate.per.gb[which(SCAN2_df$condition == "Normal" & SCAN2_df$age < age_line_lb)])
+normal_elder_se1 <- se(SCAN2_df$snv.rate.per.gb[which(SCAN2_df$condition == "Normal" & SCAN2_df$age > age_line_lb & SCAN2_df$age < age_line_ub)])
+disease_se1 <- se(SCAN2_df$snv.rate.per.gb[which(SCAN2_df$condition == "Disease")])
+
+################################################################################
+##### genomic_context for normal, disease, and germline
+heart_PTA_Cases_Normal_vcf <- read.table("heart_PTA_Cases.all_age.normal_ssnv.vcf", sep = "\t")
+heart_PTA_Cases_Disease_vcf <- read.table("heart_PTA_Cases.all_age.disease_ssnv.vcf", sep = "\t")
+
+genomic_context_colnames <- c("Chr","Start","End","Ref","Alt","Cell_ID","Func.refGene","Gene.refGene")
+genomic_context_normal <- read.csv("heart_PTA_Cases.all_age.normal.annotation.csv", header = TRUE) %>% 
+  mutate(Cell_ID = heart_PTA_Cases_Normal_vcf$V8) %>% 
+  mutate(Case_ID = str_extract(Cell_ID, "[^_]+")) |> base::`[`(genomic_context_colnames)
+
+genomic_context_disease <- read.csv("heart_PTA_Cases.all_age.disease.annotation.csv", header = TRUE) %>% 
+  mutate(Cell_ID = heart_PTA_Cases_Disease_vcf$V8) %>% 
+  mutate(Case_ID = str_extract(Cell_ID, "[^_]+")) |> base::`[`(genomic_context_colnames)
+
+genomic_context_germline <- read.delim("heart_germline.genomic_context.random200000.tsv", header = F) %>% 
+  rename_with(~ c("Chr","Start","End","Ref","Alt","Cell_ID","Context","Func.refGene","Gene.refGene"), 
+              everything()) |> base::`[`(genomic_context_colnames)
+
+genomic_context <- rbind(genomic_context_normal, genomic_context_disease, genomic_context_germline)
+genomic_context <- genomic_context %>% 
+  mutate(Cell_ID = ifelse(Cell_ID == "1864_M-E3-2n", "1864_E3", ifelse(Cell_ID == "4402_1_A1-2n", "4402_A1", ifelse(Cell_ID == "4402_1_A3-2n", "4402_A3", 
+         ifelse(Cell_ID == "4638_1_A1-2n", "4638_A1", ifelse(Cell_ID == "4638_1_A4-2n", "4638_A4", ifelse(Cell_ID == "4638_1_B2-2n", "4638_B2", 
+         ifelse(Cell_ID == "5657_M-D1-2n", "5657_D1", ifelse(Cell_ID == "5657_M-H1-2n", "5657_H1", ifelse(Cell_ID == "5828_CM_C2_2n", "5828_C2", 
+         ifelse(Cell_ID == "5828_CM_G2_2n", "5828_G2", ifelse(Cell_ID == "5919_1_C4-2n", "5919_C4", ifelse(Cell_ID == "5919_1_D2-2n", "5919_D2", 
+         ifelse(Cell_ID == "5919_1_E3-2n", "5919_E3", ifelse(Cell_ID == "5919_1_F6-2n", "5919_F6", ifelse(Cell_ID == "6032_1_A1-2n", "6032_A1", 
+         ifelse(Cell_ID == "6032_M-C7-2n", "6032_C7", ifelse(Cell_ID == "6032_M-E7-2n", "6032_E7", ifelse(Cell_ID == "1673_CM_A2_2n", "1673_A2", 
+         ifelse(Cell_ID == "1673_CM_A3_2n", "1673_A3", ifelse(Cell_ID == "1673_CM_D2_2n", "1673_D2", Cell_ID)))))))))))))))))))))
+
+genomic_SCAN2_df <- merge(genomic_context, SCAN2_df[c("Cell_ID", "Case_ID", "age", "gender", "condition")]) %>% 
+  mutate(Group = ifelse(condition == "Normal" & age < age_line_lb, "normal_young", 
+                        ifelse(condition == "Normal" & age > age_line_lb & age < age_line_ub, "normal_elder", 
+                               ifelse(condition == "Disease", "disease", 
+                                      ifelse(Cell_ID == "germline_bulk", "germline_mutation", NA))))) %>% 
+  mutate(Group = factor(Group, levels = c("normal_young", "normal_elder", "disease", "germline_mutation"))) %>% 
+  filter(!is.na(Group))
+
+################################################################################
+##### summarize all genetic regions
+Func.refGene_oldnames <- c("intergenic","upstream","UTR5","exonic","UTR3","downstream","splicing","intronic")
+Func.refGene_newnames <- c("intergenic","upstream","5' UTR","exonic","3' UTR","downstream","splice site","intronic")
+Func.refGene_Group_df <- table(factor(genomic_SCAN2_df$Func.refGene, levels = Func.refGene_oldnames), genomic_SCAN2_df$Group) %>% 
+  `row.names<-`(Func.refGene_newnames)
+
+Func.refGene_Group_df_melt <- melt(Func.refGene_Group_df) %>% 
+  setNames(c("Func.refGene","Group","Count")) %>% 
+  mutate(Group = factor(Group, levels = c("normal_young", "normal_elder", "disease", "germline_mutation"))) %>% 
+  mutate(Func.refGene = factor(Func.refGene, levels = Func.refGene_newnames)) %>% 
+  mutate(Total = rep(table(genomic_SCAN2_df$Group), each = length(unique(Func.refGene)))) %>% 
+  mutate(Prop = Count / Total) %>% 
+  mutate(LowCI = sapply(1 : length(Group), function(x){prop.test(Count[x], Total[x])$conf.int[1]})) %>% 
+  mutate(HighCI = sapply(1 : length(Group), function(x){prop.test(Count[x], Total[x])$conf.int[2]})) %>% 
+  mutate(Normalized_Prop = Prop / Prop[Group == "germline_mutation"]) %>% 
+  mutate(Normalized_LowCI = LowCI / Prop[Group == "germline_mutation"]) %>% 
+  mutate(Normalized_HighCI = HighCI / Prop[Group == "germline_mutation"]) %>% 
+  mutate(Count1 = Prop * rep(c(normal_young_count1, normal_elder_count1, disease_count1, 0), each = length(unique(Func.refGene)))) %>% 
+  mutate(SE1 = Prop * rep(c(normal_young_se1, normal_elder_se1, disease_se1, 0), each = length(unique(Func.refGene))))
+
+write.table(Func.refGene_Group_df_melt, file = paste0(exon_vs_intron_result_dir, "/normal_vs_disease.exon_vs_intron.tsv"), quote = F, sep = "\t", row.names = F)
+
+Func.refGene_Group_df_summary <- data.frame(unclass(t(Func.refGene_Group_df[rownames(Func.refGene_Group_df) %in% c("exonic","intronic"), ])))
+Func.refGene_Group_df_summary <- Func.refGene_Group_df_summary %>% 
+  mutate(Group = factor(rownames(Func.refGene_Group_df_summary), levels = c("normal_young", "normal_elder", "disease", "germline_mutation"))) %>% 
+  mutate(Ratio = sapply(1 : length(Group), function(x){exonic[x] / intronic[x] / 
+      (exonic[Group == "germline_mutation"] / intronic[Group == "germline_mutation"])})) %>% 
+  mutate(LowCI = sapply(1 : length(Group), function(x){fisher.test(
+    matrix(c(exonic[x], intronic[x], exonic[Group == "germline_mutation"], 
+             intronic[Group == "germline_mutation"]), nrow = 2))$conf.int[1]})) %>% 
+  mutate(HighCI = sapply(1 : length(Group), function(x){fisher.test(
+    matrix(c(exonic[x], intronic[x], exonic[Group == "germline_mutation"], 
+             intronic[Group == "germline_mutation"]), nrow = 2))$conf.int[2]})) %>% 
+  mutate(Pvalue = sapply(1 : length(Group), function(x){fisher.test(
+    matrix(c(exonic[x], intronic[x], exonic[Group == "germline_mutation"], 
+             intronic[Group == "germline_mutation"]), nrow = 2))$p.value}))
+
+################################################################################
+##### plot for exon_vs_intron
+pdf(paste0(exon_vs_intron_result_dir, "/normal_vs_disease.exon_vs_intron.pdf"), width = 12, height = 6)
+p11 <- ggplot(Func.refGene_Group_df_melt, aes(x = Group, fill = Func.refGene)) + 
+  geom_bar(aes(y = Prop), stat = "identity", position = "fill", color = "black") + scale_fill_discrete(name = "") + 
+  xlab("") + ylab("Proportion") + theme_classic() + 
+  theme(text = element_text(size = 15), axis.text.x = element_text(angle = 45, hjust = 1))
+p11 
+p12 <- ggplot(Func.refGene_Group_df_melt, aes(x = Group, fill = Func.refGene)) + 
+  geom_bar(aes(y = Prop), stat = "identity", color = "black") + scale_fill_discrete(name = "") + xlab("") + theme_classic() + 
+  theme(text = element_text(size = 15), axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  facet_grid(. ~ Func.refGene, space = "free_y", scales = "free_y") 
+p12
+p2 <- ggplot(Func.refGene_Group_df_melt[Func.refGene_Group_df_melt$Group != "germline_mutation", ], 
+             aes(y = log2(Normalized_Prop), x = Func.refGene, group = Group, fill = Group, color = Group)) + 
+  geom_line(position = position_dodge(width = 0.5)) + 
+  geom_pointrange(aes(ymin = log2(Normalized_LowCI), ymax = log2(Normalized_HighCI)), position = position_dodge(width = 0.5)) + 
+  geom_hline(yintercept = 0, linetype = 2) + 
+  xlab("Category") + ylab("Normalized proportion (log2)") + theme_classic() + 
+  theme(text = element_text(size = 16), axis.text.x = element_text(angle = 45, hjust = 1))
+p2
+p31 <- ggplot(Func.refGene_Group_df_melt[Func.refGene_Group_df_melt$Group != "germline_mutation", ], aes(x = Group, fill = Group)) + 
+  geom_bar(aes(y = Count1), stat = "identity", color = "black") + 
+  geom_errorbar(aes(ymin = Count1 - SE1, ymax = Count1 + SE1), width = 0.5) + 
+  scale_fill_discrete(name = "") + xlab("") + ylab("Somatic SNVs per GB") + theme_classic() + 
+  theme(text = element_text(size = 15), axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  facet_grid(. ~ Func.refGene, space = "free_y", scales = "free_y") 
+p31
+
+p32 <- ggplot(Func.refGene_Group_df_melt[Func.refGene_Group_df_melt$Group != "germline_mutation", ], aes(x = Group, color = Group)) + 
+  geom_point(aes(y = Count1), stat = "identity", size = 2) + 
+  geom_errorbar(aes(ymin = Count1 - SE1, ymax = Count1 + SE1), width = 0.5, linewidth = 1.0) + 
+  scale_y_sqrt(breaks = c(0, 10, 20, 50, 100, 200, 500, 1000)) +
+  # scale_color_manual(name="",values=c("lightpink","lightsalmon","indianred3","lightskyblue","deepskyblue","royalblue1")) +
+  # scale_color_manual(name="",values=c("indianred3", "royalblue1")) + 
+  scale_color_manual(values = c("normal_young" = "skyblue1", "normal_elder" = "dodgerblue4", "disease" = "firebrick3"), 
+                     labels = c("normal_young" = group_labels[1], "normal_elder" = group_labels[2], "disease" = group_labels[3])) + 
+  xlab("Group") + ylab("Somatic SNVs per GB") + 
+  theme_classic() + theme(text = element_text(size = 16), axis.text.x = element_blank()) + 
+  facet_grid(. ~ Func.refGene, space = "free_y", scales = "free_y")
+p32
+ggsave(paste0(exon_vs_intron_result_dir, "/normal_vs_disease.exon_vs_intron.all_regions.png"),
+       plot = p32, width = 12, height = 6, dpi = 600)
+dev.off()
+
+pdf(paste0(exon_vs_intron_result_dir, "/normal_vs_disease.exon_vs_intron.ratio.pdf"), width = 5, height = 12)
+p2a <- ggplot(Func.refGene_Group_df_melt[Func.refGene_Group_df_melt$Group %in% c("normal_young", "normal_elder", "disease"), ], 
+              aes(y = log2(Normalized_Prop), x = Func.refGene, group = Group, color = Group)) + 
+  geom_pointrange(aes(ymin = log2(Normalized_LowCI), ymax = log2(Normalized_HighCI)), size = 1.5, linewidth = 1.5, position = position_dodge(width = 0.5)) + 
+  geom_hline(yintercept = 0, linetype = 2) + 
+  scale_color_manual(values = c("normal_young" = "skyblue1", "normal_elder" = "dodgerblue4", "disease" = "firebrick3"), 
+                     labels = c("normal_young" = group_labels[1], "normal_elder" = group_labels[2], "disease" = group_labels[3])) + 
+  xlab("Category") + ylab("Normalized proportion (log2)") + 
+  theme_classic() + theme(text = element_text(size = 16), axis.text.x = element_text(angle = 45, hjust = 1))
+p2a
+
+P_normal_young_exo <- formatC(signif(Func.refGene_Group_df_summary$Pvalue[1], digits = 2), digits = 2, format="fg", flag="#")
+P_normal_elder_exo <- format(Func.refGene_Group_df_summary$Pvalue[2], scientific = TRUE, digits = 2)
+P_disease_exo <- format(Func.refGene_Group_df_summary$Pvalue[3], scientific = TRUE, digits = 2)
+p2c <- ggplot(Func.refGene_Group_df_summary[Func.refGene_Group_df_summary$Group %in% c("normal_young", "normal_elder", "disease"), ], 
+              aes(y = Ratio, x = Group, color = Group)) + 
+  geom_pointrange(aes(ymin = LowCI, ymax = HighCI), size = 1.5, linewidth = 1.5) + geom_hline(yintercept = 1, linetype = 2, linewidth = 1) + 
+  scale_color_manual(values = c("normal_young" = "skyblue1", "normal_elder" = "dodgerblue4", "disease" = "firebrick3")) + 
+  annotate("text", size = 7, x = 0.95, y = Func.refGene_Group_df_summary$HighCI[1] + 0.07,
+           label = paste0("P = ", P_normal_young_exo), color = "skyblue1") +
+  annotate("text", size = 7, x = 1.95, y = Func.refGene_Group_df_summary$HighCI[2] + 0.07, 
+           label = paste0("P = ", P_normal_elder_exo), color = "dodgerblue4") + 
+  annotate("text", size = 7, x = 2.95, y = Func.refGene_Group_df_summary$HighCI[3] + 0.07, 
+           label = paste0("P = ", P_disease_exo), color = "firebrick3") + 
+  xlab("Group") + ylab("Normalized exonic-intronic ratio") + 
+  scale_x_discrete(labels = group_labels) + theme_classic() + 
+  theme(text = element_text(size = 20), axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 0.5), legend.position = "none")
+p2c
+ggsave(paste0(exon_vs_intron_result_dir, "/normal_vs_disease.exon_vs_intron.ratio.png"),
+       plot = p2c, width = 5, height = 12, dpi = 600)
+dev.off()
+
+################################################################################
+##################### nonsynonymous vs synonymous analysis #####################
+################################################################################
+############### exonic_context for normal, disease, and germline ###############
+################################################################################
+exonic_context_colnames <- c("Chr","Start","End","Ref","Alt","Cell_ID","ExonicFunc.refGene","AAChange.refGene")
+exonic_context_normal <- read.csv("heart_PTA_Cases.all_age.normal.annotation.csv", header = TRUE) %>% 
+  mutate(Cell_ID = heart_PTA_Cases_Normal_vcf$V8) %>% 
+  mutate(Case_ID = str_extract(Cell_ID, "[^_]+")) %>% 
+  filter(ExonicFunc.refGene != ".") |> base::`[`(exonic_context_colnames)
+
+exonic_context_disease <- read.csv("heart_PTA_Cases.all_age.disease.annotation.csv", header = TRUE) %>% 
+  mutate(Cell_ID = heart_PTA_Cases_Disease_vcf$V8) %>% 
+  mutate(Case_ID = str_extract(Cell_ID, "[^_]+")) %>% 
+  filter(ExonicFunc.refGene != ".") |> base::`[`(exonic_context_colnames)
+
+exonic_context_germline <- read.delim("heart_germline.exonic_context.tsv", header = F) %>% 
+  rename_with(~ c("Chr","Start","End","Ref","Alt","Cell_ID","Context","ExonicFunc.refGene","AAChange.refGene","Deleterious"), 
+              everything()) |> base::`[`(exonic_context_colnames)
+
+exonic_context <- rbind(exonic_context_normal, exonic_context_disease, exonic_context_germline)
+exonic_context <- exonic_context %>% 
+  mutate(Cell_ID = ifelse(Cell_ID == "1864_M-E3-2n", "1864_E3", ifelse(Cell_ID == "4402_1_A1-2n", "4402_A1", ifelse(Cell_ID == "4402_1_A3-2n", "4402_A3", 
+  ifelse(Cell_ID == "4638_1_A1-2n", "4638_A1", ifelse(Cell_ID == "4638_1_A4-2n", "4638_A4", ifelse(Cell_ID == "4638_1_B2-2n", "4638_B2", 
+  ifelse(Cell_ID == "5657_M-D1-2n", "5657_D1", ifelse(Cell_ID == "5657_M-H1-2n", "5657_H1", ifelse(Cell_ID == "5828_CM_C2_2n", "5828_C2", 
+  ifelse(Cell_ID == "5828_CM_G2_2n", "5828_G2", ifelse(Cell_ID == "5919_1_C4-2n", "5919_C4", ifelse(Cell_ID == "5919_1_D2-2n", "5919_D2", 
+  ifelse(Cell_ID == "5919_1_E3-2n", "5919_E3", ifelse(Cell_ID == "5919_1_F6-2n", "5919_F6", ifelse(Cell_ID == "6032_1_A1-2n", "6032_A1", 
+  ifelse(Cell_ID == "6032_M-C7-2n", "6032_C7", ifelse(Cell_ID == "6032_M-E7-2n", "6032_E7", ifelse(Cell_ID == "1673_CM_A2_2n", "1673_A2", 
+  ifelse(Cell_ID == "1673_CM_A3_2n", "1673_A3", ifelse(Cell_ID == "1673_CM_D2_2n", "1673_D2", Cell_ID)))))))))))))))))))))
+
+exonic_SCAN2_df <- merge(exonic_context, SCAN2_df[c("Cell_ID", "Case_ID", "age", "gender", "condition")]) %>% 
+  mutate(Group = ifelse(condition == "Normal" & age < age_line_lb, "normal_young", 
+                        ifelse(condition == "Normal" & age > age_line_lb & age < age_line_ub, "normal_elder", 
+                               ifelse(condition == "Disease", "disease", 
+                                      ifelse(Cell_ID == "germline_bulk", "germline_mutation", NA))))) %>% 
+  mutate(Group = factor(Group, levels = c("normal_young", "normal_elder", "disease", "germline_mutation"))) %>% 
+  filter(!is.na(Group))
+
+################################################################################
+##### summarize all mutation types
+ExonicFunc.refGene_oldnames <- c("nonsynonymous SNV","synonymous SNV","stopgain","stoploss")
+ExonicFunc.refGene_newnames <- c("nonsynonymous","synonymous","stopgain","stoploss")
+ExonicFunc.refGene_Group_df <- table(factor(exonic_SCAN2_df$ExonicFunc.refGene, levels = ExonicFunc.refGene_oldnames), exonic_SCAN2_df$Group) %>% 
+  `row.names<-`(ExonicFunc.refGene_newnames)
+
+p_exon <- Func.refGene_Group_df_melt$Prop[Func.refGene_Group_df_melt$Func.refGene == "exonic"]
+ExonicFunc.refGene_Group_df_melt <- melt(ExonicFunc.refGene_Group_df) %>% 
+  setNames(c("ExonicFunc.refGene","Group","Count")) %>% 
+  mutate(Group = factor(Group, levels = c("normal_young", "normal_elder", "disease", "germline_mutation"))) %>% 
+  mutate(ExonicFunc.refGene = factor(ExonicFunc.refGene, levels = ExonicFunc.refGene_newnames)) %>% 
+  mutate(Total = rep(table(exonic_SCAN2_df$Group), each = length(unique(ExonicFunc.refGene)))) %>% 
+  mutate(Prop = Count / Total) %>% 
+  mutate(LowCI = sapply(1 : length(Group), function(x){prop.test(Count[x], Total[x])$conf.int[1]})) %>% 
+  mutate(HighCI = sapply(1 : length(Group), function(x){prop.test(Count[x], Total[x])$conf.int[2]})) %>% 
+  mutate(Normalized_Prop = Prop / Prop[Group == "germline_mutation"]) %>% 
+  mutate(Normalized_LowCI = LowCI / Prop[Group == "germline_mutation"]) %>% 
+  mutate(Normalized_HighCI = HighCI / Prop[Group == "germline_mutation"]) %>% 
+  mutate(Count1 = Prop * rep(c(normal_young_count1, normal_elder_count1, disease_count1, 0) * p_exon, each = length(unique(ExonicFunc.refGene)))) %>% 
+  mutate(SE1 = Prop * rep(c(normal_young_se1, normal_elder_se1, disease_se1, 0) * p_exon, each = length(unique(ExonicFunc.refGene))))
+
+write.table(ExonicFunc.refGene_Group_df_melt, file = paste0(nonsyn_vs_syn_result_dir, "/normal_vs_disease.nonsyn_vs_syn.tsv"), quote = F, sep = "\t", row.names = F)
+
+ExonicFunc.refGene_Group_df_summary <- data.frame(unclass(t(ExonicFunc.refGene_Group_df[rownames(ExonicFunc.refGene_Group_df) %in% c("nonsynonymous","synonymous"), ])))
+ExonicFunc.refGene_Group_df_summary <- ExonicFunc.refGene_Group_df_summary %>% 
+  mutate(Group = factor(rownames(ExonicFunc.refGene_Group_df_summary), levels = c("normal_young", "normal_elder", "disease", "germline_mutation"))) %>% 
+  mutate(Ratio = sapply(1 : length(Group), function(x){nonsynonymous[x] / synonymous[x] / 
+      (nonsynonymous[Group == "germline_mutation"] / synonymous[Group == "germline_mutation"])})) %>% 
+  mutate(LowCI = sapply(1 : length(Group), function(x){fisher.test(
+    matrix(c(nonsynonymous[x], synonymous[x], nonsynonymous[Group == "germline_mutation"], 
+             synonymous[Group == "germline_mutation"]), nrow = 2))$conf.int[1]})) %>% 
+  mutate(HighCI = sapply(1 : length(Group), function(x){fisher.test(
+    matrix(c(nonsynonymous[x], synonymous[x], nonsynonymous[Group == "germline_mutation"], 
+             synonymous[Group == "germline_mutation"]), nrow = 2))$conf.int[2]})) %>% 
+  mutate(Pvalue = sapply(1 : length(Group), function(x){fisher.test(
+    matrix(c(nonsynonymous[x], synonymous[x], nonsynonymous[Group == "germline_mutation"], 
+             synonymous[Group == "germline_mutation"]), nrow = 2))$p.value}))
+
+################################################################################
+##### plot for nonsyn_vs_syn
+pdf(paste0(nonsyn_vs_syn_result_dir, "/normal_vs_disease.nonsyn_vs_syn.pdf"), width = 10, height = 6)
+p41 <- ggplot(ExonicFunc.refGene_Group_df_melt, aes(x = Group, fill = ExonicFunc.refGene)) + 
+  geom_bar(aes(y = Prop), stat = "identity", position = "fill", color = "black") + scale_fill_discrete(name = "") + 
+  xlab("") + ylab("Proportion") + theme_classic() + 
+  theme(text = element_text(size = 15), axis.text.x = element_text(angle = 45, hjust = 1))
+p41 
+p42 <- ggplot(ExonicFunc.refGene_Group_df_melt, aes(x = Group, fill = ExonicFunc.refGene)) + 
+  geom_bar(aes(y = Prop), stat = "identity", color = "black") + scale_fill_discrete(name = "") + xlab("") + theme_classic() + 
+  theme(text = element_text(size = 15), axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  facet_grid(. ~ ExonicFunc.refGene, space = "free_y", scales = "free_y") 
+p42
+p5 <- ggplot(ExonicFunc.refGene_Group_df_melt[ExonicFunc.refGene_Group_df_melt$Group != "germline_mutation", ], 
+             aes(y = log2(Normalized_Prop), x = ExonicFunc.refGene, group = Group, fill = Group, color = Group)) + 
+  geom_line(position = position_dodge(width = 0.5)) + 
+  geom_pointrange(aes(ymin = log2(Normalized_LowCI), ymax = log2(Normalized_HighCI)), position = position_dodge(width = 0.5)) + 
+  geom_hline(yintercept = 0, linetype = 2) + 
+  xlab("Category") + ylab("Normalized proportion (log2)") + theme_classic() + 
+  theme(text = element_text(size = 16), axis.text.x = element_text(angle = 45, hjust = 1))
+p5
+p61 <- ggplot(ExonicFunc.refGene_Group_df_melt[ExonicFunc.refGene_Group_df_melt$Group != "germline_mutation", ], aes(x = Group, fill = Group)) + 
+  geom_bar(aes(y = Count1), stat = "identity", color = "black") + 
+  geom_errorbar(aes(ymin = Count1 - SE1, ymax = Count1 + SE1), width = 0.5) + 
+  scale_fill_discrete(name = "") + xlab("") + ylab("Somatic SNVs per GB") + theme_classic() + 
+  theme(text = element_text(size = 15), axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  facet_grid(. ~ ExonicFunc.refGene, space = "free_y", scales = "free_y") 
+p61
+
+p62 <- ggplot(ExonicFunc.refGene_Group_df_melt[ExonicFunc.refGene_Group_df_melt$Group != "germline_mutation", ], aes(x = Group, color = Group)) + 
+  geom_point(aes(y = Count1), stat = "identity", size = 2) + 
+  geom_errorbar(aes(ymin = Count1 - SE1, ymax = Count1 + SE1), width = 0.5, linewidth = 1) + 
+  # scale_y_sqrt(breaks = c(0, 10, 50, 100, 500)) +
+  # scale_color_manual(name="",values=c("lightpink","lightsalmon","indianred3","lightskyblue","deepskyblue","royalblue1")) +
+  # scale_color_manual(name="",values=c("indianred3", "royalblue1")) + 
+  scale_color_manual(values = c("normal_young" = "skyblue1", "normal_elder" = "dodgerblue4", "disease" = "firebrick3"), 
+                     labels = c("normal_young" = group_labels[1], "normal_elder" = group_labels[2], "disease" = group_labels[3])) + 
+  xlab("Group") + ylab("Somatic SNVs per GB") + 
+  theme_classic() + theme(text = element_text(size = 16), axis.text.x = element_blank()) + 
+  facet_grid(. ~ ExonicFunc.refGene, space = "free_y", scales = "free_y")
+p62
+ggsave(paste0(nonsyn_vs_syn_result_dir, "/normal_vs_disease.nonsyn_vs_syn.all_regions.png"),
+       plot = p62, width = 10, height = 6, dpi = 600)
+dev.off()
+
+pdf(paste0(nonsyn_vs_syn_result_dir, "/normal_vs_disease.nonsyn_vs_syn.ratio.pdf"), width = 5, height = 12)
+p2a <- ggplot(ExonicFunc.refGene_Group_df_melt[ExonicFunc.refGene_Group_df_melt$Group %in% c("normal_young", "normal_elder", "disease"), ], 
+              aes(y = log2(Normalized_Prop), x = ExonicFunc.refGene, group = Group, color = Group)) + 
+  geom_pointrange(aes(ymin = log2(Normalized_LowCI), ymax = log2(Normalized_HighCI)), size = 1.5, linewidth = 1.5, position = position_dodge(width = 0.5)) + 
+  geom_hline(yintercept = 0, linetype = 2) + 
+  scale_color_manual(values = c("normal_young" = "skyblue1", "normal_elder" = "dodgerblue4", "disease" = "firebrick3"), 
+                     labels = c("normal_young" = group_labels[1], "normal_elder" = group_labels[2], "disease" = group_labels[3])) + 
+  xlab("Category") + ylab("Normalized proportion (log2)") + 
+  theme_classic() + theme(text = element_text(size = 16), axis.text.x = element_text(angle = 45, hjust = 1))
+p2a
+
+P_normal_young_nonsyn <- formatC(signif(ExonicFunc.refGene_Group_df_summary$Pvalue[1], digits = 2), digits = 2, format="fg", flag="#")
+P_normal_elder_nonsyn <- format(ExonicFunc.refGene_Group_df_summary$Pvalue[2], scientific = TRUE, digits = 2)
+P_disease_nonsyn <- format(ExonicFunc.refGene_Group_df_summary$Pvalue[3], scientific = TRUE, digits = 2)
+p2c <- ggplot(ExonicFunc.refGene_Group_df_summary[ExonicFunc.refGene_Group_df_summary$Group %in% c("normal_young", "normal_elder", "disease"), ], 
+              aes(y = Ratio, x = Group, color = Group)) + 
+  geom_pointrange(aes(ymin = LowCI, ymax = HighCI), size = 1.5, linewidth = 1.5) + geom_hline(yintercept = 1, linetype = 2, linewidth = 1) + 
+  scale_color_manual(values = c("normal_young" = "skyblue1", "normal_elder" = "dodgerblue4", "disease" = "firebrick3")) + 
+  annotate("text", size = 7, x = 0.95, y = ExonicFunc.refGene_Group_df_summary$HighCI[1] + 40,
+           label = paste0("P = ", P_normal_young_nonsyn), color = "skyblue1") +
+  annotate("text", size = 7, x = 1.95, y = ExonicFunc.refGene_Group_df_summary$HighCI[2] + 0.75, 
+           label = paste0("P = ", P_normal_elder_nonsyn), color = "dodgerblue4") + 
+  annotate("text", size = 7, x = 2.95, y = ExonicFunc.refGene_Group_df_summary$HighCI[3] + 0.5, 
+           label = paste0("P = ", P_disease_nonsyn), color = "firebrick3") + 
+  xlab("Group") + ylab("Normalized nonsyn-syn ratio") + 
+  scale_x_discrete(labels = group_labels) + theme_classic() + 
+  scale_y_continuous("Normalized nonsyn-syn ratio", transform = 'log10') + 
+  theme(text = element_text(size = 20), axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 0.5), legend.position = "none")
+p2c
+ggsave(paste0(nonsyn_vs_syn_result_dir, "/normal_vs_disease.nonsyn_vs_syn.ratio.png"),
+       plot = p2c, width = 5, height = 12, dpi = 600)
+dev.off()
+

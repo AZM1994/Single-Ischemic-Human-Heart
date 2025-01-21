@@ -1,0 +1,26 @@
+{
+    "id": "A611B3E9",
+    "path": "~/Documents/BCH_research/SNV_enrichment_analysis/SNV_GO_Enrichment/heart_PTA_Cases/Extended_Table_SNV_calls.R",
+    "project_path": "Extended_Table_SNV_calls.R",
+    "type": "r_source",
+    "hash": "4242736170",
+    "contents": "",
+    "dirty": false,
+    "created": 1733492848241.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "61,0",
+        "scrollLine": "20"
+    },
+    "folds": "22|40|44|0|\n",
+    "lastKnownWriteTime": 1733495728,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1733495728443,
+    "read_only": false,
+    "read_only_alternatives": []
+}

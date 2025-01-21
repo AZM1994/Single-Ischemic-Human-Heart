@@ -1,0 +1,26 @@
+{
+    "id": "663CBD59",
+    "path": "~/Documents/annovar/heart_PTA_IPSC/sSNVs_distribution.across_genic_annotation.mutation_type/exon_vs_intron.nonsyn_vs_syn.R",
+    "project_path": "exon_vs_intron.nonsyn_vs_syn.R",
+    "type": "r_source",
+    "hash": "401997408",
+    "contents": "",
+    "dirty": false,
+    "created": 1715095126946.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "128,68",
+        "scrollLine": "118"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1715095897,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1715095897473,
+    "read_only": false,
+    "read_only_alternatives": []
+}

@@ -1,0 +1,329 @@
+library(ggplot2)
+library(reshape2)
+library(stringr)
+library(dplyr)
+
+setwd("/Users/zhemingan/Documents/annovar/heart_PTA_IPSC/sSNVs_distribution.across_genic_annotation.mutation_type")
+exon_vs_intron_result_dir <- "results/1-exon_vs_intron"
+dir.create(exon_vs_intron_result_dir, recursive = TRUE)
+nonsyn_vs_syn_result_dir <- "results/2-nonsyn_vs_syn"
+dir.create(nonsyn_vs_syn_result_dir, recursive = TRUE)
+group_labels <- c("normoxia", "hypoxia")
+
+genomic_factor <- 5.845
+se <- function(x, na.rm=FALSE){
+  if (na.rm) x <- na.omit(x) 
+  sqrt(var(x)/length(x))
+  }
+
+SCAN2_df <- readRDS("SCAN2_df.rds") %>% 
+  rbind(list("germline_bulk", 2, 0, 0, 0, 0, 0, 0, 0, 0, "FALSE", 
+             0, 0, 0, 0, 0, 0, 0, 0, "FALSE", 999, "bulk", "bulk", "bulk"))
+colnames(SCAN2_df)[1] <- "Cell_ID"
+
+################################################################################
+##### raw snv.rate.per.gb
+normoxia_count1 <- mean(SCAN2_df$snv.rate.per.gb[which(SCAN2_df$condition == "Normoxia")])
+hypoxia_count1 <- mean(SCAN2_df$snv.rate.per.gb[which(SCAN2_df$condition == "Hypoxia")])
+
+normoxia_se1 <- se(SCAN2_df$snv.rate.per.gb[which(SCAN2_df$condition == "Normoxia")])
+hypoxia_se1 <- se(SCAN2_df$snv.rate.per.gb[which(SCAN2_df$condition == "Hypoxia")])
+
+################################################################################
+##### genomic_context for normal, disease, and germline
+heart_PTA_IPSC_Normoxia_vcf <- read.table("heart_PTA_IPSC.normoxia_ssnv.vcf", sep = "\t")
+heart_PTA_IPSC_Hypoxia_vcf <- read.table("heart_PTA_IPSC.hypoxia_ssnv.vcf", sep = "\t")
+
+genomic_context_colnames <- c("Chr","Start","End","Ref","Alt","Cell_ID","Func.refGene","Gene.refGene")
+genomic_context_normoxia <- read.csv("heart_PTA_IPSC.normoxia.annotation.csv", header = TRUE) %>% 
+  mutate(Cell_ID = heart_PTA_IPSC_Normoxia_vcf$V8) %>% 
+  mutate(Case_ID = str_extract(Cell_ID, "[^_]+")) |> base::`[`(genomic_context_colnames)
+
+genomic_context_hypoxia <- read.csv("heart_PTA_IPSC.hypoxia.annotation.csv", header = TRUE) %>% 
+  mutate(Cell_ID = heart_PTA_IPSC_Hypoxia_vcf$V8) %>% 
+  mutate(Case_ID = str_extract(Cell_ID, "[^_]+")) |> base::`[`(genomic_context_colnames)
+
+genomic_context_germline <- read.delim("heart_germline.genomic_context.random200000.tsv", header = F) %>% 
+  rename_with(~ c("Chr","Start","End","Ref","Alt","Cell_ID","Context","Func.refGene","Gene.refGene"), 
+              everything()) |> base::`[`(genomic_context_colnames)
+
+genomic_context <- rbind(genomic_context_normoxia, genomic_context_hypoxia, genomic_context_germline)
+genomic_context <- genomic_context %>% 
+  mutate(Cell_ID = ifelse(Cell_ID == "HypoxiaiPSCB3", "B3", ifelse(Cell_ID == "HypoxiaiPSCB7", "B7", ifelse(Cell_ID == "HypoxiaiPSCB8", "B8", 
+         ifelse(Cell_ID == "HypoxiaiPSCB9", "B9", ifelse(Cell_ID == "HypoxiaiPSCB10", "B10", ifelse(Cell_ID == "HypoxiaiPSCB11", "B11", 
+         ifelse(Cell_ID == "Hypoxia2n_IPSC", "B2n", ifelse(Cell_ID == "NormoxiaiPSCA3", "A3", ifelse(Cell_ID == "NormoxiaiPSCA6", "A6", 
+         ifelse(Cell_ID == "NormoxiaiPSCA7", "A7", ifelse(Cell_ID == "NormoxiaiPSCA8", "A8", ifelse(Cell_ID == "NormoxiaiPSCA9", "A9", 
+         ifelse(Cell_ID == "NormoxiaiPSCA11", "A11", ifelse(Cell_ID == "Normoxia2n_IPSC", "A2n", Cell_ID)))))))))))))))
+
+genomic_SCAN2_df <- merge(genomic_context, SCAN2_df[c("Cell_ID", "age", "gender", "condition")]) %>% 
+  mutate(Group = ifelse(condition == "Normoxia", "Normoxia", 
+                        ifelse(condition == "Hypoxia", "Hypoxia", 
+                                      ifelse(Cell_ID == "germline_bulk", "germline_mutation", NA)))) %>% 
+  mutate(Group = factor(Group, levels = c("Normoxia", "Hypoxia", "germline_mutation"))) %>% 
+  filter(!is.na(Group))
+
+################################################################################
+##### summarize all genetic regions
+Func.refGene_oldnames <- c("intergenic","upstream","UTR5","exonic","UTR3","downstream","splicing","intronic")
+Func.refGene_newnames <- c("intergenic","upstream","5' UTR","exonic","3' UTR","downstream","splice site","intronic")
+Func.refGene_Group_df <- table(factor(genomic_SCAN2_df$Func.refGene, levels = Func.refGene_oldnames), genomic_SCAN2_df$Group) %>% 
+  `row.names<-`(Func.refGene_newnames)
+
+Func.refGene_Group_df_melt <- melt(Func.refGene_Group_df) %>% 
+  setNames(c("Func.refGene","Group","Count")) %>% 
+  mutate(Group = factor(Group, levels = c("Normoxia", "Hypoxia", "germline_mutation"))) %>% 
+  mutate(Func.refGene = factor(Func.refGene, levels = Func.refGene_newnames)) %>% 
+  mutate(Total = rep(table(genomic_SCAN2_df$Group), each = length(unique(Func.refGene)))) %>% 
+  mutate(Prop = Count / Total) %>% 
+  mutate(LowCI = sapply(1 : length(Group), function(x){prop.test(Count[x], Total[x])$conf.int[1]})) %>% 
+  mutate(HighCI = sapply(1 : length(Group), function(x){prop.test(Count[x], Total[x])$conf.int[2]})) %>% 
+  mutate(Normalized_Prop = Prop / Prop[Group == "germline_mutation"]) %>% 
+  mutate(Normalized_LowCI = LowCI / Prop[Group == "germline_mutation"]) %>% 
+  mutate(Normalized_HighCI = HighCI / Prop[Group == "germline_mutation"]) %>% 
+  mutate(Count1 = Prop * rep(c(normoxia_count1, hypoxia_count1, 0), each = length(unique(Func.refGene)))) %>% 
+  mutate(SE1 = Prop * rep(c(normoxia_se1, hypoxia_se1, 0), each = length(unique(Func.refGene))))
+
+write.table(Func.refGene_Group_df_melt, file = paste0(exon_vs_intron_result_dir, "/normoxia_vs_hypoxia.exon_vs_intron.tsv"), quote = F, sep = "\t", row.names = F)
+
+Func.refGene_Group_df_summary <- data.frame(unclass(t(Func.refGene_Group_df[rownames(Func.refGene_Group_df) %in% c("exonic","intronic"), ])))
+Func.refGene_Group_df_summary <- Func.refGene_Group_df_summary %>% 
+  mutate(Group = factor(rownames(Func.refGene_Group_df_summary), levels = c("Normoxia", "Hypoxia", "germline_mutation"))) %>% 
+  mutate(Ratio = sapply(1 : length(Group), function(x){exonic[x] / intronic[x] / 
+      (exonic[Group == "germline_mutation"] / intronic[Group == "germline_mutation"])})) %>% 
+  mutate(LowCI = sapply(1 : length(Group), function(x){fisher.test(
+    matrix(c(exonic[x], intronic[x], exonic[Group == "germline_mutation"], 
+             intronic[Group == "germline_mutation"]), nrow = 2))$conf.int[1]})) %>% 
+  mutate(HighCI = sapply(1 : length(Group), function(x){fisher.test(
+    matrix(c(exonic[x], intronic[x], exonic[Group == "germline_mutation"], 
+             intronic[Group == "germline_mutation"]), nrow = 2))$conf.int[2]})) %>% 
+  mutate(Pvalue = sapply(1 : length(Group), function(x){fisher.test(
+    matrix(c(exonic[x], intronic[x], exonic[Group == "germline_mutation"], 
+             intronic[Group == "germline_mutation"]), nrow = 2))$p.value}))
+
+################################################################################
+##### plot for exon_vs_intron
+pdf(paste0(exon_vs_intron_result_dir, "/normoxia_vs_hypoxia.exon_vs_intron.pdf"), width = 12, height = 6)
+p11 <- ggplot(Func.refGene_Group_df_melt, aes(x = Group, fill = Func.refGene)) + 
+  geom_bar(aes(y = Prop), stat = "identity", position = "fill", color = "black") + scale_fill_discrete(name = "") + 
+  xlab("") + ylab("Proportion") + theme_classic() + 
+  theme(text = element_text(size = 15), axis.text.x = element_text(angle = 45, hjust = 1))
+p11 
+p12 <- ggplot(Func.refGene_Group_df_melt, aes(x = Group, fill = Func.refGene)) + 
+  geom_bar(aes(y = Prop), stat = "identity", color = "black") + scale_fill_discrete(name = "") + xlab("") + theme_classic() + 
+  theme(text = element_text(size = 15), axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  facet_grid(. ~ Func.refGene, space = "free_y", scales = "free_y") 
+p12
+p2 <- ggplot(Func.refGene_Group_df_melt[Func.refGene_Group_df_melt$Group != "germline_mutation", ], 
+             aes(y = log2(Normalized_Prop), x = Func.refGene, group = Group, fill = Group, color = Group)) + 
+  geom_line(position = position_dodge(width = 0.5)) + 
+  geom_pointrange(aes(ymin = log2(Normalized_LowCI), ymax = log2(Normalized_HighCI)), position = position_dodge(width = 0.5)) + 
+  geom_hline(yintercept = 0, linetype = 2) + 
+  xlab("Category") + ylab("Normalized proportion (log2)") + theme_classic() + 
+  theme(text = element_text(size = 16), axis.text.x = element_text(angle = 45, hjust = 1))
+p2
+p31 <- ggplot(Func.refGene_Group_df_melt[Func.refGene_Group_df_melt$Group != "germline_mutation", ], aes(x = Group, fill = Group)) + 
+  geom_bar(aes(y = Count1), stat = "identity", color = "black") + 
+  geom_errorbar(aes(ymin = Count1 - SE1, ymax = Count1 + SE1), width = 0.5) + 
+  scale_fill_discrete(name = "") + xlab("") + ylab("Somatic SNVs per GB") + theme_classic() + 
+  theme(text = element_text(size = 15), axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  facet_grid(. ~ Func.refGene, space = "free_y", scales = "free_y") 
+p31
+
+p32 <- ggplot(Func.refGene_Group_df_melt[Func.refGene_Group_df_melt$Group != "germline_mutation", ], aes(x = Group, color = Group)) + 
+  geom_point(aes(y = Count1), stat = "identity", size = 2) + 
+  geom_errorbar(aes(ymin = Count1 - SE1, ymax = Count1 + SE1), width = 0.5, linewidth = 1.0) + 
+  scale_y_sqrt(breaks = c(0, 10, 50, 100)) +
+  # scale_color_manual(name="",values=c("lightpink","lightsalmon","indianred3","lightskyblue","deepskyblue","royalblue1")) +
+  # scale_color_manual(name="",values=c("indianred3", "royalblue1")) + 
+  scale_color_manual(values = c("Normoxia" = "dodgerblue4", "Hypoxia" = "firebrick3"), 
+                     labels = c("Normoxia" = group_labels[1], "Hypoxia" = group_labels[2])) + 
+  xlab("Group") + ylab("Somatic SNVs per GB") + 
+  theme_classic() + theme(text = element_text(size = 16), axis.text.x = element_blank()) + 
+  facet_grid(. ~ Func.refGene, space = "free_y", scales = "free_y")
+p32
+ggsave(paste0(exon_vs_intron_result_dir, "/normoxia_vs_hypoxia.exon_vs_intron.all_regions.png"),
+       plot = p32, width = 12, height = 6, dpi = 600)
+dev.off()
+
+pdf(paste0(exon_vs_intron_result_dir, "/normoxia_vs_hypoxia.exon_vs_intron.ratio.pdf"), width = 5, height = 12)
+p2a <- ggplot(Func.refGene_Group_df_melt[Func.refGene_Group_df_melt$Group %in% c("Normoxia", "Hypoxia"), ], 
+              aes(y = log2(Normalized_Prop), x = Func.refGene, group = Group, color = Group)) + 
+  geom_pointrange(aes(ymin = log2(Normalized_LowCI), ymax = log2(Normalized_HighCI)), size = 1.5, linewidth = 1.5, position = position_dodge(width = 0.5)) + 
+  geom_hline(yintercept = 0, linetype = 2) + 
+  scale_color_manual(values = c("Normoxia" = "dodgerblue4", "Hypoxia" = "firebrick3"), 
+                     labels = c("Normoxia" = group_labels[1], "Hypoxia" = group_labels[2])) + 
+  xlab("Category") + ylab("Normalized proportion (log2)") + 
+  theme_classic() + theme(text = element_text(size = 16), axis.text.x = element_text(angle = 45, hjust = 1))
+p2a
+
+P_normoxia_exo <- formatC(signif(Func.refGene_Group_df_summary$Pvalue[1], digits = 2), digits = 2, format="fg", flag="#")
+P_hypoxia_exo <- formatC(signif(Func.refGene_Group_df_summary$Pvalue[2], digits = 2), digits = 2, format="fg", flag="#")
+p2c <- ggplot(Func.refGene_Group_df_summary[Func.refGene_Group_df_summary$Group %in% c("Normoxia", "Hypoxia"), ], 
+              aes(y = Ratio, x = Group, color = Group)) + 
+  geom_pointrange(aes(ymin = LowCI, ymax = HighCI), size = 1.5, linewidth = 1.5) + geom_hline(yintercept = 1, linetype = 2, linewidth = 1) + 
+  scale_color_manual(values = c("Normoxia" = "dodgerblue4", "Hypoxia" = "firebrick3")) + 
+  annotate("text", size = 7, x = 0.95, y = Func.refGene_Group_df_summary$HighCI[1] + 0.07, 
+           label = paste0("P = ", P_normoxia_exo), color = "skyblue1") + 
+  annotate("text", size = 7, x = 1.95, y = Func.refGene_Group_df_summary$HighCI[2] + 0.07, 
+           label = paste0("P = ", P_hypoxia_exo), color = "firebrick3") + 
+  xlab("Group") + ylab("Normalized exonic-intronic ratio") + 
+  scale_x_discrete(labels = group_labels) + theme_classic() + 
+  theme(text = element_text(size = 20), axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 0.5), legend.position = "none")
+p2c
+ggsave(paste0(exon_vs_intron_result_dir, "/normoxia_vs_hypoxia.exon_vs_intron.ratio.png"),
+       plot = p2c, width = 5, height = 12, dpi = 600)
+dev.off()
+
+################################################################################
+##################### nonsynonymous vs synonymous analysis #####################
+################################################################################
+############### exonic_context for normal, disease, and germline ###############
+################################################################################
+exonic_context_colnames <- c("Chr","Start","End","Ref","Alt","Cell_ID","ExonicFunc.refGene","AAChange.refGene")
+exonic_context_normoxia <- read.csv("heart_PTA_IPSC.normoxia.annotation.csv", header = TRUE) %>% 
+  mutate(Cell_ID = heart_PTA_IPSC_Normoxia_vcf$V8) %>% 
+  mutate(Case_ID = str_extract(Cell_ID, "[^_]+")) %>% 
+  filter(ExonicFunc.refGene != ".") |> base::`[`(exonic_context_colnames)
+
+exonic_context_hypoxia <- read.csv("heart_PTA_IPSC.hypoxia.annotation.csv", header = TRUE) %>% 
+  mutate(Cell_ID = heart_PTA_IPSC_Hypoxia_vcf$V8) %>% 
+  mutate(Case_ID = str_extract(Cell_ID, "[^_]+")) %>% 
+  filter(ExonicFunc.refGene != ".") |> base::`[`(exonic_context_colnames)
+
+exonic_context_germline <- read.delim("heart_germline.exonic_context.tsv", header = F) %>% 
+  rename_with(~ c("Chr","Start","End","Ref","Alt","Cell_ID","Context","ExonicFunc.refGene","AAChange.refGene","Deleterious"), 
+              everything()) |> base::`[`(exonic_context_colnames)
+
+exonic_context <- rbind(exonic_context_normoxia, exonic_context_hypoxia, exonic_context_germline)
+exonic_context <- exonic_context %>% 
+  mutate(Cell_ID = ifelse(Cell_ID == "HypoxiaiPSCB3", "B3", ifelse(Cell_ID == "HypoxiaiPSCB7", "B7", ifelse(Cell_ID == "HypoxiaiPSCB8", "B8", 
+  ifelse(Cell_ID == "HypoxiaiPSCB9", "B9", ifelse(Cell_ID == "HypoxiaiPSCB10", "B10", ifelse(Cell_ID == "HypoxiaiPSCB11", "B11", 
+  ifelse(Cell_ID == "Hypoxia2n_IPSC", "B2n", ifelse(Cell_ID == "NormoxiaiPSCA3", "A3", ifelse(Cell_ID == "NormoxiaiPSCA6", "A6", 
+  ifelse(Cell_ID == "NormoxiaiPSCA7", "A7", ifelse(Cell_ID == "NormoxiaiPSCA8", "A8", ifelse(Cell_ID == "NormoxiaiPSCA9", "A9", 
+  ifelse(Cell_ID == "NormoxiaiPSCA11", "A11", ifelse(Cell_ID == "Normoxia2n_IPSC", "A2n", Cell_ID)))))))))))))))
+
+exonic_SCAN2_df <- merge(exonic_context, SCAN2_df[c("Cell_ID", "age", "gender", "condition")]) %>% 
+  mutate(Group = ifelse(condition == "Normoxia", "Normoxia", 
+                        ifelse(condition == "Hypoxia", "Hypoxia", 
+                               ifelse(Cell_ID == "germline_bulk", "germline_mutation", NA)))) %>% 
+  mutate(Group = factor(Group, levels = c("Normoxia", "Hypoxia", "germline_mutation"))) %>% 
+  filter(!is.na(Group))
+
+################################################################################
+##### summarize all mutation types
+ExonicFunc.refGene_oldnames <- c("nonsynonymous SNV","synonymous SNV","stopgain","stoploss")
+ExonicFunc.refGene_newnames <- c("nonsynonymous","synonymous","stopgain","stoploss")
+ExonicFunc.refGene_Group_df <- table(factor(exonic_SCAN2_df$ExonicFunc.refGene, levels = ExonicFunc.refGene_oldnames), exonic_SCAN2_df$Group) %>% 
+  `row.names<-`(ExonicFunc.refGene_newnames)
+
+p_exon <- Func.refGene_Group_df_melt$Prop[Func.refGene_Group_df_melt$Func.refGene == "exonic"]
+ExonicFunc.refGene_Group_df_melt <- melt(ExonicFunc.refGene_Group_df) %>% 
+  setNames(c("ExonicFunc.refGene","Group","Count")) %>% 
+  mutate(Group = factor(Group, levels = c("Normoxia", "Hypoxia", "germline_mutation"))) %>% 
+  mutate(ExonicFunc.refGene = factor(ExonicFunc.refGene, levels = ExonicFunc.refGene_newnames)) %>% 
+  mutate(Total = rep(table(exonic_SCAN2_df$Group), each = length(unique(ExonicFunc.refGene)))) %>% 
+  mutate(Prop = Count / Total) %>% 
+  mutate(LowCI = sapply(1 : length(Group), function(x){prop.test(Count[x], Total[x])$conf.int[1]})) %>% 
+  mutate(HighCI = sapply(1 : length(Group), function(x){prop.test(Count[x], Total[x])$conf.int[2]})) %>% 
+  mutate(Normalized_Prop = Prop / Prop[Group == "germline_mutation"]) %>% 
+  mutate(Normalized_LowCI = LowCI / Prop[Group == "germline_mutation"]) %>% 
+  mutate(Normalized_HighCI = HighCI / Prop[Group == "germline_mutation"]) %>% 
+  mutate(Count1 = Prop * rep(c(normoxia_count1, hypoxia_count1, 0) * p_exon, each = length(unique(ExonicFunc.refGene)))) %>% 
+  mutate(SE1 = Prop * rep(c(normoxia_se1, hypoxia_se1, 0) * p_exon, each = length(unique(ExonicFunc.refGene))))
+
+write.table(ExonicFunc.refGene_Group_df_melt, file = paste0(nonsyn_vs_syn_result_dir, "/normoxia_vs_hypoxia.nonsyn_vs_syn.tsv"), quote = F, sep = "\t", row.names = F)
+
+ExonicFunc.refGene_Group_df_summary <- data.frame(unclass(t(ExonicFunc.refGene_Group_df[rownames(ExonicFunc.refGene_Group_df) %in% c("nonsynonymous","synonymous"), ])))
+ExonicFunc.refGene_Group_df_summary <- ExonicFunc.refGene_Group_df_summary %>% 
+  mutate(Group = factor(rownames(ExonicFunc.refGene_Group_df_summary), levels = c("Normoxia", "Hypoxia", "germline_mutation"))) %>% 
+  mutate(Ratio = sapply(1 : length(Group), function(x){nonsynonymous[x] / synonymous[x] / 
+      (nonsynonymous[Group == "germline_mutation"] / synonymous[Group == "germline_mutation"])})) %>% 
+  mutate(LowCI = sapply(1 : length(Group), function(x){fisher.test(
+    matrix(c(nonsynonymous[x], synonymous[x], nonsynonymous[Group == "germline_mutation"], 
+             synonymous[Group == "germline_mutation"]), nrow = 2))$conf.int[1]})) %>% 
+  mutate(HighCI = sapply(1 : length(Group), function(x){fisher.test(
+    matrix(c(nonsynonymous[x], synonymous[x], nonsynonymous[Group == "germline_mutation"], 
+             synonymous[Group == "germline_mutation"]), nrow = 2))$conf.int[2]})) %>% 
+  mutate(Pvalue = sapply(1 : length(Group), function(x){fisher.test(
+    matrix(c(nonsynonymous[x], synonymous[x], nonsynonymous[Group == "germline_mutation"], 
+             synonymous[Group == "germline_mutation"]), nrow = 2))$p.value}))
+
+################################################################################
+##### plot for nonsyn_vs_syn
+pdf(paste0(nonsyn_vs_syn_result_dir, "/normoxia_vs_hypoxia.nonsyn_vs_syn.pdf"), width = 10, height = 6)
+p41 <- ggplot(ExonicFunc.refGene_Group_df_melt, aes(x = Group, fill = ExonicFunc.refGene)) + 
+  geom_bar(aes(y = Prop), stat = "identity", position = "fill", color = "black") + scale_fill_discrete(name = "") + 
+  xlab("") + ylab("Proportion") + theme_classic() + 
+  theme(text = element_text(size = 15), axis.text.x = element_text(angle = 45, hjust = 1))
+p41 
+p42 <- ggplot(ExonicFunc.refGene_Group_df_melt, aes(x = Group, fill = ExonicFunc.refGene)) + 
+  geom_bar(aes(y = Prop), stat = "identity", color = "black") + scale_fill_discrete(name = "") + xlab("") + theme_classic() + 
+  theme(text = element_text(size = 15), axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  facet_grid(. ~ ExonicFunc.refGene, space = "free_y", scales = "free_y") 
+p42
+p5 <- ggplot(ExonicFunc.refGene_Group_df_melt[ExonicFunc.refGene_Group_df_melt$Group != "germline_mutation", ], 
+             aes(y = log2(Normalized_Prop), x = ExonicFunc.refGene, group = Group, fill = Group, color = Group)) + 
+  geom_line(position = position_dodge(width = 0.5)) + 
+  geom_pointrange(aes(ymin = log2(Normalized_LowCI), ymax = log2(Normalized_HighCI)), position = position_dodge(width = 0.5)) + 
+  geom_hline(yintercept = 0, linetype = 2) + 
+  xlab("Category") + ylab("Normalized proportion (log2)") + theme_classic() + 
+  theme(text = element_text(size = 16), axis.text.x = element_text(angle = 45, hjust = 1))
+p5
+p61 <- ggplot(ExonicFunc.refGene_Group_df_melt[ExonicFunc.refGene_Group_df_melt$Group != "germline_mutation", ], aes(x = Group, fill = Group)) + 
+  geom_bar(aes(y = Count1), stat = "identity", color = "black") + 
+  geom_errorbar(aes(ymin = Count1 - SE1, ymax = Count1 + SE1), width = 0.5) + 
+  scale_fill_discrete(name = "") + xlab("") + ylab("Somatic SNVs per GB") + theme_classic() + 
+  theme(text = element_text(size = 15), axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  facet_grid(. ~ ExonicFunc.refGene, space = "free_y", scales = "free_y") 
+p61
+
+p62 <- ggplot(ExonicFunc.refGene_Group_df_melt[ExonicFunc.refGene_Group_df_melt$Group != "germline_mutation", ], aes(x = Group, color = Group)) + 
+  geom_point(aes(y = Count1), stat = "identity", size = 2) + 
+  geom_errorbar(aes(ymin = Count1 - SE1, ymax = Count1 + SE1), width = 0.5, linewidth = 1) + 
+  # scale_y_sqrt(breaks = c(0, 10, 50, 100, 500, 1000, 2000, 3000)) +
+  # scale_color_manual(name="",values=c("lightpink","lightsalmon","indianred3","lightskyblue","deepskyblue","royalblue1")) +
+  # scale_color_manual(name="",values=c("indianred3", "royalblue1")) + 
+  scale_color_manual(values = c("Normoxia" = "dodgerblue4", "Hypoxia" = "firebrick3"), 
+                     labels = c("Normoxia" = group_labels[1], "Hypoxia" = group_labels[2])) + 
+  xlab("Group") + ylab("Somatic SNVs per GB") + 
+  theme_classic() + theme(text = element_text(size = 16), axis.text.x = element_blank()) + 
+  facet_grid(. ~ ExonicFunc.refGene, space = "free_y", scales = "free_y")
+p62
+ggsave(paste0(nonsyn_vs_syn_result_dir, "/normoxia_vs_hypoxia.nonsyn_vs_syn.all_regions.png"),
+       plot = p62, width = 10, height = 6, dpi = 600)
+dev.off()
+
+pdf(paste0(nonsyn_vs_syn_result_dir, "/normoxia_vs_hypoxia.nonsyn_vs_syn.ratio.pdf"), width = 5, height = 12)
+p2a <- ggplot(ExonicFunc.refGene_Group_df_melt[ExonicFunc.refGene_Group_df_melt$Group %in% c("Normoxia", "Hypoxia"), ], 
+              aes(y = log2(Normalized_Prop), x = ExonicFunc.refGene, group = Group, color = Group)) + 
+  geom_pointrange(aes(ymin = log2(Normalized_LowCI), ymax = log2(Normalized_HighCI)), size = 1.5, linewidth = 1.5, position = position_dodge(width = 0.5)) + 
+  geom_hline(yintercept = 0, linetype = 2) + 
+  scale_color_manual(values = c("Normoxia" = "dodgerblue4", "Hypoxia" = "firebrick3"), 
+                     labels = c("Normoxia" = group_labels[1], "Hypoxia" = group_labels[2])) + 
+  xlab("Category") + ylab("Normalized proportion (log2)") + 
+  theme_classic() + theme(text = element_text(size = 16), axis.text.x = element_text(angle = 45, hjust = 1))
+p2a
+
+P_normoxia_nonsyn <- formatC(signif(ExonicFunc.refGene_Group_df_summary$Pvalue[1], digits = 2), digits = 2, format="fg", flag="#")
+# P_normal_elder_nonsyn <- format(ExonicFunc.refGene_Group_df_summary$Pvalue[2], scientific = TRUE, digits = 2)
+P_hypoxia_nonsyn <- format(ExonicFunc.refGene_Group_df_summary$Pvalue[2], scientific = TRUE, digits = 2)
+p2c <- ggplot(ExonicFunc.refGene_Group_df_summary[ExonicFunc.refGene_Group_df_summary$Group %in% c("Normoxia", "Hypoxia"), ], 
+              aes(y = Ratio, x = Group, color = Group)) + 
+  geom_pointrange(aes(ymin = LowCI, ymax = HighCI), size = 1.5, linewidth = 1.5) + geom_hline(yintercept = 1, linetype = 2, linewidth = 1) + 
+  scale_color_manual(values = c("Normoxia" = "dodgerblue4", "Hypoxia" = "firebrick3")) + 
+  annotate("text", size = 7, x = 0.95, y = ExonicFunc.refGene_Group_df_summary$HighCI[1] + 7,
+           label = paste0("P = ", P_normoxia_nonsyn), color = "skyblue1") +
+  # annotate("text", size = 7, x = 1.95, y = ExonicFunc.refGene_Group_df_summary$HighCI[2] + 0.35, 
+  #          label = paste0("P = ", P_normal_elder_nonsyn), color = "dodgerblue4") + 
+  annotate("text", size = 7, x = 1.95, y = ExonicFunc.refGene_Group_df_summary$HighCI[2] + 80, 
+           label = paste0("P = ", P_hypoxia_nonsyn), color = "firebrick3") + 
+  xlab("Group") + ylab("Normalized nonsyn-syn ratio") + 
+  scale_x_discrete(labels = group_labels) + 
+  scale_y_continuous("Normalized nonsyn-syn ratio", transform = 'log10') + 
+  theme_classic() + 
+  theme(text = element_text(size = 20), axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 0.5), legend.position = "none")
+p2c
+ggsave(paste0(nonsyn_vs_syn_result_dir, "/normoxia_vs_hypoxia.nonsyn_vs_syn.ratio.png"),
+       plot = p2c, width = 5, height = 12, dpi = 600)
+dev.off()
+

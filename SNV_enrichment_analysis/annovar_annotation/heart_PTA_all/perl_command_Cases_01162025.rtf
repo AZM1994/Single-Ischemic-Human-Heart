@@ -1,0 +1,70 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2761
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\csgray\c0;}
+\margl1440\margr1440\vieww14460\viewh15540\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs30 \cf2 \CocoaLigature0 ########################################################################################################################\
+############ all age SNV ############\
+### Control\
+perl table_annovar.pl heart_PTA_all/vcf_files/all_age/Control/heart_PTA_all.all_age.Control_ssnv.vcf humandb/ -buildver hg19 -out heart_PTA_all.all_age.Control -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation g,r,f,f,f -nastring . -vcfinput -polish\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+perl table_annovar.pl heart_PTA_all.all_age.Control.avinput humandb/ -buildver hg19 -out heart_PTA_all.all_age.Control -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation gx,r,f,f,f -nastring . -csvout -polish -xref example/gene_xref.txt\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+### IHD\
+perl table_annovar.pl heart_PTA_all/vcf_files/all_age/IHD/heart_PTA_all.all_age.IHD_ssnv.vcf humandb/ -buildver hg19 -out heart_PTA_all.all_age.IHD -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation g,r,f,f,f -nastring . -vcfinput -polish\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+perl table_annovar.pl heart_PTA_all.all_age.IHD.avinput humandb/ -buildver hg19 -out heart_PTA_all.all_age.IHD -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation gx,r,f,f,f -nastring . -csvout -polish -xref example/gene_xref.txt\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+### Control and IHD\
+perl table_annovar.pl heart_PTA_all/vcf_files/all_age/Control_and_IHD/heart_PTA_all.all_age.all_conditions_ssnv.vcf humandb/ -buildver hg19 -out heart_PTA_all.all_age.all_conditions -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation g,r,f,f,f -nastring . -vcfinput -polish\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+perl table_annovar.pl heart_PTA_all.all_age.all_conditions.avinput humandb/ -buildver hg19 -out heart_PTA_all.all_age.all_conditions -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation gx,r,f,f,f -nastring . -csvout -polish -xref example/gene_xref.txt\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+########################################################################################################################\
+############ age matched ############\
+### Control\
+perl table_annovar.pl heart_PTA_all/vcf_files/age_matched/Control/heart_PTA_all.age_matched.Control_ssnv.vcf humandb/ -buildver hg19 -out heart_PTA_all.age_matched.Control -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation g,r,f,f,f -nastring . -vcfinput -polish\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+perl table_annovar.pl heart_PTA_all.age_matched.Control.avinput humandb/ -buildver hg19 -out heart_PTA_all.age_matched.Control -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation gx,r,f,f,f -nastring . -csvout -polish -xref example/gene_xref.txt\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+### IHD\
+perl table_annovar.pl heart_PTA_all/vcf_files/age_matched/IHD/heart_PTA_all.age_matched.IHD_ssnv.vcf humandb/ -buildver hg19 -out heart_PTA_all.age_matched.IHD -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation g,r,f,f,f -nastring . -vcfinput -polish\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+perl table_annovar.pl heart_PTA_all.age_matched.IHD.avinput humandb/ -buildver hg19 -out heart_PTA_all.age_matched.IHD -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation gx,r,f,f,f -nastring . -csvout -polish -xref example/gene_xref.txt\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+### Control and IHD\
+perl table_annovar.pl heart_PTA_all/vcf_files/age_matched/Control_and_IHD/heart_PTA_all.age_matched.all_conditions_ssnv.vcf humandb/ -buildver hg19 -out heart_PTA_all.age_matched.all_conditions -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation g,r,f,f,f -nastring . -vcfinput -polish\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+perl table_annovar.pl heart_PTA_all.age_matched.all_conditions.avinput humandb/ -buildver hg19 -out heart_PTA_all.age_matched.all_conditions -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation gx,r,f,f,f -nastring . -csvout -polish -xref example/gene_xref.txt\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+########################################################################################################################\
+############ all age indel ############\
+### Control\
+perl table_annovar.pl heart_PTA_all/vcf_files/all_age_indel/Control/heart_PTA_all.all_age.Control_sindel.vcf humandb/ -buildver hg19 -out heart_PTA_all.all_age.Control.sindel -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation g,r,f,f,f -nastring . -vcfinput -polish\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+perl table_annovar.pl heart_PTA_all.all_age.Control.sindel.avinput humandb/ -buildver hg19 -out heart_PTA_all.all_age.Control.sindel -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation gx,r,f,f,f -nastring . -csvout -polish -xref example/gene_xref.txt\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+### IHD\
+perl table_annovar.pl heart_PTA_all/vcf_files/all_age_indel/IHD/heart_PTA_all.all_age.IHD_sindel.vcf humandb/ -buildver hg19 -out heart_PTA_all.all_age.IHD_sindel -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation g,r,f,f,f -nastring . -vcfinput -polish\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+perl table_annovar.pl heart_PTA_all.all_age.IHD_sindel.avinput humandb/ -buildver hg19 -out heart_PTA_all.all_age.IHD_sindel -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation gx,r,f,f,f -nastring . -csvout -polish -xref example/gene_xref.txt\
+}

@@ -1,0 +1,9 @@
+{
+    "sortOrder": [
+        {
+            "columnIndex": 2,
+            "ascending": true
+        }
+    ],
+    "path": "~/Documents/BCH_research/annovar/heart_PTA_Cases/check_SNV_in_hotgenes"
+}

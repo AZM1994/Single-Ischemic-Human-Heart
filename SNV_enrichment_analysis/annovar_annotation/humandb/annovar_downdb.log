@@ -1,0 +1,13 @@
+ANNOVAR Version:
+	$Date: 2020-06-07 23:56:37 -0400 (Sun,  7 Jun 2020) $
+ANNOVAR Information:
+	For questions, comments, documentation, bug reports and program update, please visit http://www.openbioinformatics.org/annovar/
+ANNOVAR Command:
+	annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp30a humandb/
+ANNOVAR Started:
+	Tue Feb 13 16:14:05 2024
+NOTICE: Web-based checking to see whether ANNOVAR new version is available ... Done
+NOTICE: Downloading annotation database http://www.openbioinformatics.org/annovar/download/hg19_dbnsfp30a.txt.gz ... Done
+NOTICE: Downloading annotation database http://www.openbioinformatics.org/annovar/download/hg19_dbnsfp30a.txt.idx.gz ... Done
+NOTICE: Uncompressing downloaded files
+NOTICE: Finished downloading annotation files for hg19 build version, with files saved at the 'humandb' directory

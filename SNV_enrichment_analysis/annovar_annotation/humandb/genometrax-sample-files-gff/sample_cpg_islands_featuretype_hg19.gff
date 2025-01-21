@@ -1,0 +1,11 @@
+##gff-version 3
+chr1	CpG_island	CpG_island	10002808	10003929	.	.	.	ID=2191534; accession=10002808; cpgCount=63; ensembl=ENSG00000162441; entrez=84328; gcPercent=57; hgnc=LZIC; uniprot=Q8WZA0; feature=CpGs=63:Percent=57
+chr1	CpG_island	CpG_island	100503155	100504715	.	.	.	ID=2191535; accession=100503155; cpgCount=130; ensembl=ENSG00000156875; entrez=64645; gcPercent=61; hgnc=HIAT1; uniprot=Q96MC6; feature=CpGs=130:Percent=61
+chr1	CpG_island	CpG_island	109791656	109793066	.	.	.	ID=2191536; accession=109791656; cpgCount=133; ensembl=ENSG00000143126; entrez=1952; gcPercent=71; hgnc=CELSR2; uniprot=Q9HCU4; feature=CpGs=133:Percent=71
+chr1	CpG_island	CpG_island	1705616	1706134	.	.	.	ID=2191537; accession=1705616; cpgCount=25; ensembl=ENSG00000008130; entrez=65220; gcPercent=55; hgnc=NADK; uniprot=O95544; feature=CpGs=25:Percent=55
+chr5	CpG_island	CpG_island	82769354	82770863	.	.	.	ID=2191538; accession=82769354; cpgCount=82; ensembl=ENSG00000038427; entrez=1462; gcPercent=56; hgnc=VCAN; uniprot=P13611; feature=CpGs=82:Percent=56
+chr5	CpG_island	CpG_island	82906091	82906601	.	.	.	ID=2191539; accession=82906091; cpgCount=25; ensembl=ENSG00000145681; entrez=1404; gcPercent=55; hgnc=HAPLN1; uniprot=P10915; feature=CpGs=25:Percent=55
+chr5	CpG_island	CpG_island	83017456	83018736	.	.	.	ID=2191540; accession=83017456; cpgCount=85; ensembl=ENSG00000145681; entrez=1404; gcPercent=59; hgnc=HAPLN1; uniprot=P10915; feature=CpGs=85:Percent=59
+chr5	CpG_island	CpG_island	83042477	83043017	.	.	.	ID=2191541; accession=83042477; cpgCount=28; ensembl=ENSG00000145681; entrez=1404; gcPercent=56; hgnc=HAPLN1; uniprot=P10915; feature=CpGs=28:Percent=56
+chr5	CpG_island	CpG_island	83095007	83095527	.	.	.	ID=2191542; accession=83095007; cpgCount=26; ensembl=ENSG00000145681; entrez=1404; gcPercent=55; hgnc=HAPLN1; uniprot=P10915; feature=CpGs=26:Percent=55
+chr5	CpG_island	CpG_island	83173	85763	.	.	.	ID=2191543; accession=83173; cpgCount=178; ensembl=ENSG00000153404; entrez=153478; gcPercent=67; hgnc=PLEKHG4B; uniprot=Q96PX9; feature=CpGs=178:Percent=67

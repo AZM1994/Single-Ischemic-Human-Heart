@@ -1,0 +1,26 @@
+{
+    "id": "2E1C1829",
+    "path": "~/Documents/BCH_research/SNV_enrichment_analysis/heart_PTA_Cases/sSNVs_distribution.across_genic_annotation.mutation_type/exon_vs_intron.nonsyn_vs_syn.R",
+    "project_path": "exon_vs_intron.nonsyn_vs_syn.R",
+    "type": "r_source",
+    "hash": "143747846",
+    "contents": "",
+    "dirty": false,
+    "created": 1714446991869.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "332,16",
+        "scrollLine": "325"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1734870832,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1734870832058,
+    "read_only": false,
+    "read_only_alternatives": []
+}
