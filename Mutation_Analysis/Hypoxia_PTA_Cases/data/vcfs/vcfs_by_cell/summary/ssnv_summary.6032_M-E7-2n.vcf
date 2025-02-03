@@ -1,2 +1,0 @@
-results.call.mutations.snv.pass	ncalls	callable.sens	callable.bp	callable.burden	rate.per.gb	burden	somatic.sens	pre.genotyping.burden	unsupported.filters	cell_id
-156	82	0.399306051637922	1310543921	205.356266612145	78.3477239188784	457.942535152163	0.179061768028937	608	FALSE	6032_M-E7-2n

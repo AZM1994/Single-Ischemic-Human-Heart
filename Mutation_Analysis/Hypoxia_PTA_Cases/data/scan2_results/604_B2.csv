@@ -1,4 +1,0 @@
-"","snv.ncalls","snv.callable.sens","snv.callable.bp","snv.callable.burden","snv.rate.per.gb","snv.burden","snv.somatic.sens","snv.pre.genotyping.burden","snv.unsupported.filters","indel.ncalls","indel.callable.sens","indel.callable.bp","indel.callable.burden","indel.rate.per.gb","indel.burden","indel.somatic.sens","indel.pre.genotyping.burden","indel.unsupported.filters"
-"1",0,0,633978152,NA,NA,NA,NA,2098,FALSE,0,0,489766091,NA,NA,NA,NA,636,FALSE
-"2",360,0.207466340269278,1267981595,1735.22123893805,684.245436124825,3999.41535008393,0.090013156546105,2098,FALSE,23,0.0792217898832685,1218667262,290.32416502947,119.115436215546,696.22985975677,0.0330350669074078,636,FALSE
-"4",333,0.416595100805627,691056916,799.337292627859,578.344036591524,3380.42154971959,0.0985084242015977,2098,FALSE,26,0.369189511323004,884583310,70.4245359160613,39.8066157929553,232.669714450526,0.111746387196983,636,FALSE
