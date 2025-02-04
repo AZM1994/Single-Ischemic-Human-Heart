@@ -1,1 +1,0 @@
-{"num_classes": 60, "num_hidden_layers_pos": 1, "num_hidden_layers_neg": 2, "num_units_pos": 500, "num_units_neg": 500, "model_type": "ErrorFinder"}

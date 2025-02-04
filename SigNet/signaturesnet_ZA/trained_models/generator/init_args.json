@@ -1,1 +1,0 @@
-{"device": "cuda", "latent_dim": 100, "num_hidden_layers": 5, "input_size": 60, "model_type": "Generator"}

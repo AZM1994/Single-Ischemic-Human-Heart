@@ -1,3 +1,0 @@
-category	over_represented_pvalue	under_represented_pvalue	numDEInCat	numInCat	term	ontology	over_represented_pvalue_corrected
-GO:0060538	0.000199063622447904	0.999990130572645	4	170	skeletal muscle organ development	BP	0.000398127244895809
-GO:0007519	0.0025433842854622	0.999846926458234	3	159	skeletal muscle tissue development	BP	0.0025433842854622
