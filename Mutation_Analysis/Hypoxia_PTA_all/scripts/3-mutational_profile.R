@@ -26,6 +26,15 @@ filter_outliers <- function(data, threshold = 3.5) {
   setdiff(rownames(data), outliers) # Return the names of samples that are not outliers
 }
 
+## Filter out outliers in each condition
+filtered_mut_mat_est_Control <- filter_outliers(mut_mat_est[SCAN2_df$Cell_ID[SCAN2_df$Condition == "Control"], ], threshold = 3.5)
+filtered_mut_mat_est_IHD <- filter_outliers(mut_mat_est[SCAN2_df$Cell_ID[SCAN2_df$Condition == "IHD"], ], threshold = 3.5)
+mut_mat_est_filtered <- mut_mat_est[c(filtered_mut_mat_est_Control, filtered_mut_mat_est_IHD), ]
+write.csv(mut_mat_est_filtered, file = paste0(table_dir, "/mut_mat_est_PTA_all_filtered.csv"))
+mut_mat_raw_filtered <- mut_mat_raw[c(filtered_mut_mat_est_Control, filtered_mut_mat_est_IHD), ]
+write.csv(mut_mat_raw_filtered, file = paste0(table_dir, "/mut_mat_raw_PTA_all_filtered.csv"))
+filtered_samples <- c(filtered_mut_mat_est_Control, filtered_mut_mat_est_IHD)
+
 dists_all <- dist(mut_mat_est, method = "euclidean")
 mds_fit <- cmdscale(dists_all, k = 2)  # Classical multidimensional scaling in two dimensions
 mds_df <- data.frame(MDS1 = mds_fit[,1], MDS2 = mds_fit[,2], Cell_ID = rownames(mut_mat_est), Condition = SCAN2_df$Condition[match(rownames(mut_mat_est), SCAN2_df$Cell_ID)])
@@ -41,14 +50,6 @@ annotation <- data.frame(Condition = SCAN2_df$Condition[match(rownames(mut_mat_e
 rownames(annotation) <- rownames(dist_mat)
 p_heatmap_dist <- pheatmap(dist_mat, annotation_row = annotation, main = "Heatmap of Euclidean Distances Between Samples", cluster_rows = F, cluster_cols = F)
 ggsave(paste0(suppl_figure_dir, "/3-Heatmap_dist_mut_mat_est.pdf"), plot = p_heatmap_dist, width = 15, height = 12, dpi = 600)
-
-## Filter out outliers in each condition
-filtered_mut_mat_est_Control <- filter_outliers(mut_mat_est[SCAN2_df$Cell_ID[SCAN2_df$Condition == "Control"], ])
-filtered_mut_mat_est_IHD <- filter_outliers(mut_mat_est[SCAN2_df$Cell_ID[SCAN2_df$Condition == "IHD"], ])
-mut_mat_est_filtered <- mut_mat_est[c(filtered_mut_mat_est_Control, filtered_mut_mat_est_IHD), ]
-write.csv(mut_mat_est_filtered, file = paste0(table_dir, "/mut_mat_est_PTA_all_filtered.csv"))
-mut_mat_raw_filtered <- mut_mat_raw[c(filtered_mut_mat_est_Control, filtered_mut_mat_est_IHD), ]
-write.csv(mut_mat_raw_filtered, file = paste0(table_dir, "/mut_mat_raw_PTA_all_filtered.csv"))
 
 ################################################################################
 

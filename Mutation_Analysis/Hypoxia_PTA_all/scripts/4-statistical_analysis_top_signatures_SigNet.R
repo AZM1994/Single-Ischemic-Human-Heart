@@ -26,9 +26,9 @@ p_top_sigs_spectrum_by_condition <- plot_96_profile_abs(top_sigs_spectrum_by_con
 # ggsave(paste0(other_figure_dir, "/p_top_sigs_spectrum_by_condition.pdf"), plot = p_top_sigs_spectrum_by_condition, width = 20, height = 10, dpi = 300)
 
 ## find differences between top signature spectrum and ground truth
-ground_truth <- mut_mat_raw_cond[c(control_name, disease_name), ] %>% t() %>% {1 / colSums(.) * .}
-diff_spectrum <- top_sigs_spectrum_by_condition - ground_truth
-p_diff_spectrum <- plot_96_profile_abs(diff_spectrum)
+# ground_truth <- mut_mat_raw_cond[c(control_name, disease_name), ] %>% t() %>% {1 / colSums(.) * .}
+# diff_spectrum <- top_sigs_spectrum_by_condition - ground_truth
+# p_diff_spectrum <- plot_96_profile_abs(diff_spectrum)
 # ggsave(paste0(other_figure_dir, "/p_diff_spectrum.pdf"), plot = p_diff_spectrum, width = 20, height = 10, dpi = 300)
 
 ##### top signatures contribution
@@ -161,8 +161,8 @@ pdf(paste0(other_figure_dir, "/4-lmer_top_sigs_all.pdf"), width = 12, height = 8
         labs(x = "Age (years)", y = paste0(refined_selected_sigs_list[i], " Contribution \n (sSNV rate per GB)")) + theme_linedraw() + 
         theme(panel.background = element_rect(fill = "white"), panel.grid.major = element_line(color = "grey80", linetype = "dashed", size = 0.25), panel.grid.minor = element_blank(), 
               panel.border = element_rect(size = 0.5), text = element_text(size = 24), axis.title.x = element_text(hjust = 0.4, vjust = 0))
+      print(p_SNV_burden_lme)
       if (anova_pvalue <= 0.05){
-        print(p_SNV_burden_lme)
         ggsave(paste0(main_figure_dir, "/4-", refined_selected_sigs_list[i], "_SNV_burden_lme.pdf"), plot = p_SNV_burden_lme, width = 9, height = 6, dpi = 600)
       }
       
@@ -209,8 +209,8 @@ pdf(paste0(other_figure_dir, "/4-lmer_top_sigs_all.pdf"), width = 12, height = 8
         labs(x = "Age (years)", y = paste0(refined_selected_sigs_list[i], " Contribution \n (sSNV rate per GB)")) + theme_linedraw() + 
         theme(panel.background = element_rect(fill = "white"), panel.grid.major = element_line(color = "grey80", linetype = "dashed", size = 0.25), panel.grid.minor = element_blank(), 
               panel.border = element_rect(size = 0.5), text = element_text(size = 24), axis.title.x = element_text(hjust = 0.4, vjust = 0))
+      print(p_SNV_burden_lme)
       if (anova_pvalue <= 0.05){
-        print(p_SNV_burden_lme)
         ggsave(paste0(main_figure_dir, "/4-", refined_selected_sigs_list[i], "_SNV_burden_lme.pdf"), plot = p_SNV_burden_lme, width = 9, height = 6, dpi = 600)
       }
     }
