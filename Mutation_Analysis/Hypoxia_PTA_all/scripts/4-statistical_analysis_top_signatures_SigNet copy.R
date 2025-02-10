@@ -1,61 +1,81 @@
-################################################################################
-######### 1. determine the highest contribution signatures            ##########
-######### 2. find signatures that are significantly different between ##########
-#########    the normal and disease conditions                        ##########
-################################################################################
+###############################################################################
+##### 1. determine the highest contribution signatures            #############
+##### 2. find signatures that are significantly different between #############
+#####    the normal and disease conditions                        #############
+###############################################################################
 
-##### function determines highest contribution signatures in age-matched samples
-func_Reshape <- function(a, n, m){if (missing(m)) m <- length(a)%/%n
-if (length(a) != n * m) stop("Matrix 'a' does not have n*m elements")
-dim(a) <- c(n, m)
-return(a)}
-
+##### determine the highest contribution signatures
 sig_contri <- as.data.frame(t(SigNet_contri))
-sig_contri_est <- 1 / rowSums(sig_contri) * sig_contri * SCAN2_df$snv.rate.per.gb
-sig_contri_est_AMG <- sig_contri_est[Cell_ID_list_AMG, ]
-top_sig_contri <- sort(colSums(sig_contri_est_AMG), decreasing = TRUE)[1 : 11]
-top_sigs <- row.names(data.frame(top_sig_contri))
+sig_contri_AMG <- sig_contri[Cell_ID_list_AMG, ]
+contri_for_each_sig <- colSums(sig_contri)
+top_contri_for_each_sig <- sort(contri_for_each_sig, decreasing = TRUE)[1:20]
+top_sigs <- row.names(data.frame(top_contri_for_each_sig))
 
-top_sig_contri_cond <- sig_contri_est_AMG %>% 
+##### identify point mutation type in top signatures
+Reshape <- function(a, n, m){if (missing(m)) m <- length(a)%/%n
+  if (length(a) != n * m) stop("Matrix 'a' does not have n*m elements")
+  dim(a) <- c(n, m)
+  return(a)}
+
+## raw SigNet results
+top_sig_contri_cond <- sig_contri %>% .[, colnames(.) %in% top_sigs] %>% 
+  mutate(others = rowSums(sig_contri[, !(colnames(sig_contri) %in% top_sigs)])) %>% t() %>% as.data.frame() %>% 
+  mutate(Control = rowMeans(.[, ctrl_range_AMG]), IHD = rowMeans(.[, dis_range_AMG])) %>% dplyr::select(ctrl_name, dis_name)
+sorted_labels <- as.data.frame(row.names(top_sig_contri_cond)) %>% mutate(A = .[[1]]) %>% t() %>% as.matrix() %>% Reshape(nrow(top_sig_contri_cond) * 2, 1)
+dim(sorted_labels) <- c(nrow(top_sig_contri_cond) * 2,1)
+
+label_size <- 6 * rbind(top_sig_contri_cond[,1] / top_sig_contri_cond[,1], top_sig_contri_cond[,2] / top_sig_contri_cond[,2])
+label_size <- Reshape(label_size,ncol(label_size)*2,1)
+label_size[is.na(label_size)] <- 0
+
+##### plot raw contribution for Control and IHD: normalized to 1
+p_sSNV_top_sigs_contri_raw <- plot_contribution(top_sig_contri_cond, coord_flip = FALSE, mode = "relative") + aes(label = sorted_labels) + 
+  geom_text(size = label_size, position = position_stack(vjust = 0.5), col = "white", fontface = "bold") + 
+  theme_linedraw() + theme(panel.background = element_rect(fill = "white"), panel.grid.major = element_line(color = "grey80", linetype = "dashed", size = 0.25), 
+                           panel.grid.minor = element_blank(), panel.border = element_rect(linewidth = 0.5), text = element_text(size = 12))
+ggsave(paste0(other_figure_dir, "/4-sSNV_top_sigs_contri_raw.pdf"), plot = p_sSNV_top_sigs_contri_raw, width = 12, height = 18, dpi = 300)
+
+##########################################################################
+##### normalize total contribution for each cell to estimated burden
+sig_contri_normalized <- 1 / rowSums(sig_contri) * sig_contri * SCAN2_df$snv.rate.per.gb
+sig_contri_normalized_AMG <- sig_contri_normalized[Cell_ID_list_AMG, ]
+contri_for_each_sig <- colSums(sig_contri_normalized)
+top_contri_for_each_sig <- sort(contri_for_each_sig, decreasing = TRUE)[1:20]
+top_sigs <- row.names(data.frame(top_contri_for_each_sig))
+
+sig_contri_normalized_AMG_cond <- sig_contri_normalized_AMG %>% .[, colnames(.) %in% top_sigs] %>% 
   mutate(others = rowSums(.[, !(colnames(.) %in% top_sigs)])) %>% t() %>% as.data.frame() %>% 
   mutate(Control = rowMeans(.[, ctrl_range_AMG]), IHD = rowMeans(.[, dis_range_AMG])) %>% dplyr::select(ctrl_name, dis_name) %>% 
   mutate(Control_Pct = Control / sum(Control) * 100, IHD_Pct = IHD / sum(IHD) * 100, 
          Control_label = paste0(rownames(.), " (", round(Control_Pct, 1), "%)"), IHD_label = paste0(rownames(.), " (", round(IHD_Pct, 1), "%)"), 
-         Control_label = ifelse(Control_Pct < 0.7, NA, Control_label), IHD_label = ifelse(IHD_Pct < 0.7, NA, IHD_label)) %>% filter(rownames(.) %in% c(top_sigs, "others"))
+         Control_label = ifelse(Control_Pct < 0.7, NA, Control_label), IHD_label = ifelse(IHD_Pct < 0.7, NA, IHD_label))
 
-sorted_labels <- as.data.frame(row.names(top_sig_contri_cond)) %>% mutate(A = .[[1]]) %>% t() %>% as.matrix() %>% func_Reshape(nrow(top_sig_contri_cond) * 2, 1)
-dim(sorted_labels) <- c(nrow(top_sig_contri_cond) * 2,1)
-label_size <- 6 * rbind(top_sig_contri_cond[,1] / top_sig_contri_cond[,1], top_sig_contri_cond[,2] / top_sig_contri_cond[,2])
-label_size <- func_Reshape(label_size,ncol(label_size)*2,1)
+sorted_labels <- as.data.frame(row.names(sig_contri_normalized_AMG_cond)) %>% mutate(A = .[[1]]) %>% t() %>% as.matrix() %>% Reshape(nrow(sig_contri_normalized_AMG_cond) * 2,1)
+
+label_size <- 6 * rbind(sig_contri_normalized_AMG_cond[,1] / sig_contri_normalized_AMG_cond[,1], sig_contri_normalized_AMG_cond[,2] / sig_contri_normalized_AMG_cond[,2])
+label_size <- Reshape(label_size,ncol(label_size)*2,1)
 label_size[is.na(label_size)] <- 0
 
-## plot contribution for Control and IHD
-cus_12_colors <- c("#dcdc64", "#a0ca78", "#9bcae9", "#d3a9ce", "#e9a0a5", "#dc6464", "#fbbc7d", "#f6dc87", "#e9c54e","#bc9678","#ca9b23","grey")
-p_sSNV_top_sigs_contri_relative <- plot_contribution(top_sig_contri_cond[, 1:2], coord_flip = FALSE, mode = "relative") + scale_fill_manual(name = "Signature", values = cus_12_colors) + 
-  # aes(label = sorted_labels) + geom_text(size = label_size, position = position_stack(vjust = 0.5), col = "white", fontface = "bold") + 
+p_sSNV_top_sigs_burden <- plot_contribution(sig_contri_normalized_AMG_cond[,1:2], coord_flip = F, mode = "absolute") +
+  # aes(label = sorted_labels) + geom_text(size = label_size, position = position_stack(vjust = 0.5), col = "white", fontface = "bold") +
   theme_linedraw() + theme(panel.background = element_rect(fill = "white"), panel.grid.major = element_line(color = "grey80", linetype = "dashed", size = 0.25), 
                            panel.grid.minor = element_blank(), panel.border = element_rect(linewidth = 0.5), text = element_text(size = 12))
-ggsave(paste0(other_figure_dir, "/4-sSNV_top_sigs_contri_relative.pdf"), plot = p_sSNV_top_sigs_contri_relative, width = 4, height = 6, dpi = 300)
-
-p_sSNV_top_sigs_contri_abs <- plot_contribution(top_sig_contri_cond[, 1:2], coord_flip = FALSE, mode = "absolute") + scale_fill_manual(name = "Signature", values = cus_12_colors) + 
-  # aes(label = sorted_labels) + geom_text(size = label_size, position = position_stack(vjust = 0.5), col = "white", fontface = "bold") + 
-  theme_linedraw() + theme(panel.background = element_rect(fill = "white"), panel.grid.major = element_line(color = "grey80", linetype = "dashed", size = 0.25), 
-                           panel.grid.minor = element_blank(), panel.border = element_rect(linewidth = 0.5), text = element_text(size = 12))
-ggsave(paste0(main_figure_dir, "/4-sSNV_top_sigs_contri_absolute.pdf"), plot = p_sSNV_top_sigs_contri_abs, width = 4, height = 6, dpi = 300)
+ggsave(paste0(main_figure_dir, "/4-sSNV_top_sigs_burden.pdf"), plot = p_sSNV_top_sigs_burden, width = 4, height = 6, dpi = 600)
 
 ##############################################################################
 ### add metadata and remove the signatures with all zeros in one Condition
-sig_contri_est <- sig_contri_est %>% 
+# rownames(classification_guesses)[classification_guesses$Classification > 0.01]
+sig_contri_normalized <- sig_contri_normalized %>% 
   mutate(Age = metadata_df$Age, Condition = relevel(factor(metadata_df$Condition), ref = "Control"), Gender = metadata_df$Gender, Case_ID = metadata_df$Case_ID, Color = SCAN2_df$Color) %>% 
   {
-  sig_contri_est_control <- .[.$Condition == ctrl_name, ]
-  zero_col_control <- which(colSums(sig_contri_est_control[, 1:(ncol(sig_contri_est_control) - 5)]) == 0)
+  sig_contri_normalized_control <- .[.$Condition == ctrl_name, ]
+  zero_col_control <- which(colSums(sig_contri_normalized_control[, 1:(ncol(sig_contri_normalized_control) - 5)]) == 0)
   . <- .[, -zero_col_control]
-  sig_contri_est_disease <- .[.$Condition == dis_name, ]
-  zero_col_disease <- which(colSums(sig_contri_est_disease[, 1:(ncol(sig_contri_est_disease) - 5)]) == 0)
+  sig_contri_normalized_disease <- .[.$Condition == dis_name, ]
+  zero_col_disease <- which(colSums(sig_contri_normalized_disease[, 1:(ncol(sig_contri_normalized_disease) - 5)]) == 0)
   .[, -zero_col_disease]}
 
-refined_selected_sigs_list <- colnames(sig_contri_est)[1 : (ncol(sig_contri_est) - 5)]
+refined_selected_sigs_list <- colnames(sig_contri_normalized)[1 : (ncol(sig_contri_normalized) - 5)]
 sig_digits <- 2
 
 ##### Mix effects model & Age matched mix effects model
@@ -63,10 +83,10 @@ sig_digits <- 2
 pdf(paste0(other_figure_dir, "/4-lmer_top_sigs_reported.pdf"), width = 12, height = 8)
   # for (i in c(1,4,5,9,21,22,29,34,36)){
   # for (i in c(1)){
-  for (i in c(1 : (ncol(sig_contri_est) - 5))){
+  for (i in c(1 : (ncol(sig_contri_normalized) - 5))){
     cat("index", i, ":", refined_selected_sigs_list[i])
     ## burden_df: the input matrix with columns: burden, Condition, Case_ID, Age, Color
-    burden_df <- sig_contri_est[c(refined_selected_sigs_list[i], "Age", "Condition", "Case_ID", "Color")] %>% setNames(c("snv.rate.per.gb", "Age", "Condition", "Case_ID", "Color")) %>% 
+    burden_df <- sig_contri_normalized[c(refined_selected_sigs_list[i], "Age", "Condition", "Case_ID", "Color")] %>% setNames(c("snv.rate.per.gb", "Age", "Condition", "Case_ID", "Color")) %>% 
       mutate(Condition = relevel(factor(Condition), ref = "Control")) %>% group_by(factor(Condition, levels = c(ctrl_name, dis_name))) %>% arrange(Age, .by_group = TRUE)
     burden_df_ctrl <- burden_df %>% filter(Condition == "Control")
     burden_df_dis <- burden_df %>% filter(Condition == "IHD")
