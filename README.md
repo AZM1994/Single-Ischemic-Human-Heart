@@ -1,1 +1,0 @@
-# Single-Ischemic-Human-Heart
