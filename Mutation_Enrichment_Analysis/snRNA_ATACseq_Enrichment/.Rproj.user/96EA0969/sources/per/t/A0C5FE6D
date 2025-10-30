@@ -1,0 +1,26 @@
+{
+    "id": "A0C5FE6D",
+    "path": "~/Documents/BCH_research/Hypoxia_Project_Integration/Mutation_Enrichment_Analysis/snRNA_ATACseq_Enrichment/check_GO_genes_snRNA_ATACseq/1-GO_genes_snRNA_seq.R",
+    "project_path": "check_GO_genes_snRNA_ATACseq/1-GO_genes_snRNA_seq.R",
+    "type": "r_source",
+    "hash": "928511563",
+    "contents": "",
+    "dirty": false,
+    "created": 1756239675123.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "33,22",
+        "scrollLine": "12"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1756302647,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1756302647761,
+    "read_only": false,
+    "read_only_alternatives": []
+}

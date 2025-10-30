@@ -1,0 +1,26 @@
+{
+    "id": "425DA8A6",
+    "path": "~/Documents/BCH_research/SNV_enrichment_analysis/heart_PTA_Cases/check_SNV_in_reported_IHD_loci/check_SNV_in_reported_IHD_loci.R",
+    "project_path": "check_SNV_in_reported_IHD_loci.R",
+    "type": "r_source",
+    "hash": "2430262395",
+    "contents": "",
+    "dirty": false,
+    "created": 1734602093685.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "8,20",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1734935173,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1734935173882,
+    "read_only": false,
+    "read_only_alternatives": []
+}
