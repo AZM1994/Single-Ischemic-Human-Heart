@@ -1,0 +1,3 @@
+Rscript convert_files_to_all_methods.R 
+Rscript run_all_methods.R
+Rscript convert_files_to_SigNet.R

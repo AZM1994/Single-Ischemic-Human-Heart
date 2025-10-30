@@ -1,0 +1,25 @@
+config:
+    # IDs & paths
+    data_id: "exp_generator_v2"
+    model_id: "generator"
+    models_dir: "../trained_models/exp_generator_v2/"
+    cosmic_version: "v2"
+
+    # Training params
+    iterations: 600
+    num_classes: 30
+    lagrange_param: 0.001
+    batch_size: 100
+    lr_encoder: 0.005
+    lr_decoder: 0.0005
+
+    # WANDB params
+    enable_logging: True
+    wandb_project_id: "generator_v2"
+
+    # Network params
+    num_hidden_layers: 4
+    latent_dim: 40
+
+    # Misc
+    device: "cuda"
