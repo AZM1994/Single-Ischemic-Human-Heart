@@ -1,0 +1,26 @@
+{
+    "id": "9BA16E67",
+    "path": "~/Documents/BCH_research/Hypoxia_Project_Integration/Heart_RNAseq_Analysis/Hypoxia_RNAseq/commands/3-RNAseq_CMFib.R",
+    "project_path": "commands/3-RNAseq_CMFib.R",
+    "type": "r_source",
+    "hash": "1123062674",
+    "contents": "",
+    "dirty": false,
+    "created": 1754578903340.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "164,32",
+        "scrollLine": "151"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1759459356,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1759459356072,
+    "read_only": false,
+    "read_only_alternatives": []
+}

@@ -1,0 +1,26 @@
+{
+    "id": "7B085E7F",
+    "path": "~/Documents/BCH_research/Hypoxia_Project_Integration/Heart_RNAseq_Analysis/ICM_RNAseq/commands_ICM/3-CMFib_Trajectory.R",
+    "project_path": "commands_ICM/3-CMFib_Trajectory.R",
+    "type": "r_source",
+    "hash": "1024477413",
+    "contents": "",
+    "dirty": false,
+    "created": 1756064843788.0,
+    "source_on_save": false,
+    "relative_order": 7,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "20,44",
+        "scrollLine": "19"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1756082103,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1756418398986,
+    "read_only": false,
+    "read_only_alternatives": []
+}

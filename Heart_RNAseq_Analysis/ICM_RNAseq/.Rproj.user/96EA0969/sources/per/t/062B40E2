@@ -1,0 +1,26 @@
+{
+    "id": "062B40E2",
+    "path": "~/Documents/BCH_research/Hypoxia_Project_Integration/Heart_RNAseq_Analysis/ICM_RNAseq/commands_ICM/2-RNAseq_All_Celltypes.R",
+    "project_path": "commands_ICM/2-RNAseq_All_Celltypes.R",
+    "type": "r_source",
+    "hash": "3879911937",
+    "contents": "",
+    "dirty": false,
+    "created": 1755811163660.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "31,51",
+        "scrollLine": "13"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1755968009,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1755968009509,
+    "read_only": false,
+    "read_only_alternatives": []
+}

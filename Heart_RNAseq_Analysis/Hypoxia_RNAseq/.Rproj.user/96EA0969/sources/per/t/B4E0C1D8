@@ -1,0 +1,26 @@
+{
+    "id": "B4E0C1D8",
+    "path": "~/Documents/BCH_research/Hypoxia_Project_Integration/Heart_RNAseq_Analysis/Hypoxia_RNAseq/commands/2-RNAseq_All_Celltypes.R",
+    "project_path": "commands/2-RNAseq_All_Celltypes.R",
+    "type": "r_source",
+    "hash": "297925955",
+    "contents": "",
+    "dirty": false,
+    "created": 1755811226039.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "41,15",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1755909582,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1755909582987,
+    "read_only": false,
+    "read_only_alternatives": []
+}

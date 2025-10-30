@@ -1,0 +1,26 @@
+{
+    "id": "0876DC10",
+    "path": "~/Documents/BCH_research/Hypoxia_Project_Integration/Heart_RNAseq_Analysis/Hypoxia_RNAseq/commands/1-RNAseq_QC_O2.R",
+    "project_path": "commands/1-RNAseq_QC_O2.R",
+    "type": "r_source",
+    "hash": "3429858736",
+    "contents": "",
+    "dirty": false,
+    "created": 1755811222865.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "12,17",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1755811716,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1755811716631,
+    "read_only": false,
+    "read_only_alternatives": []
+}
